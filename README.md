@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/22845/kellyp2738/RADseqDuplicateFiltering.svg)](https://zenodo.org/badge/latestdoi/22845/kellyp2738/RADseqDuplicateFiltering)
+
 # DRAFT DBR Processing Pipeline
 
 # Overview
