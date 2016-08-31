@@ -213,13 +213,23 @@ def find_DBRdictionary(library, directory):
     else:
         return None
 
-def qc_loop(in_dir, out_dir, cut_min, cut_max):
+def qc_loop(in_dir, out_dir, cut_min, cut_max, read=None):
     files = os.listdir(in_dir)
     
-    cmdTemplate = Template("zcat $f | sed '2~4p' | cut -c $cut_min-$cut_max | sort | uniq -c | sort -nr -k 1 > $out")
+    # search for either read 1 or read 2
+    rexTemplate = Template(".*($read).*")
     
-    #qc_process = []
-    for f in files:
+    if read:
+        rex_uncompiled = rexTemplate.substitute(read=read)
+        rex = re.compile(rex_uncompiled)
+        correct.reads = [m.group(0) for f in files for m in [rex.search(f)] if m]
+    else:
+        correct_reads = files
+    
+    cmdTemplate = Template("zcat $f | sed -n '2~4'p | cut -c $cut_min-$cut_max | sort | uniq -c | sort -nr -k 1 > $out")
+    
+    for f in correct_reads:
+        
         f_in = os.path.join(in_dir, f)
         fq_name = os.path.splitext(f)[0]
         out = os.path.join(out_dir, fq_name)
@@ -227,7 +237,6 @@ def qc_loop(in_dir, out_dir, cut_min, cut_max):
                                      cut_min=cut_min,
                                      cut_max=cut_max,
                                      out=out)
-        #qc_process.append(cmd)
         processQueue.put(Work(commandline = cmd, shell = True), True, 360)
     
     processQueue.join()
