@@ -25,6 +25,7 @@ from collections import Counter
 from subprocess import call, Popen, PIPE
 import subprocess
 import os, os.path
+from os import linesep, path, R_OK, X_OK
 import sys
 import json
 import re
@@ -32,6 +33,12 @@ import itertools
 #import numpy as np
 import time
 import pdb
+import heapq
+import warnings
+import multiprocessing as mp
+from logging import debug, critical, error, info
+import string
+import gzip
 
 # To do
 # 1. Check that SAM files contain a map for all the sequences so that FASTQ filtering doesn't leave some bad quality data behind
@@ -41,6 +48,18 @@ import pdb
 #               dict_in = '/path/to/dbr_dict_library1',
 #               out_seqs = '/path/to/filtered_library1.fastq',
 #               n_expected = 2)
+
+def checkFile(filename):
+    '''
+    return true if this is a file and is readable on the current filesystem
+    '''
+    try:
+        if os.path.exists(os.path.abspath(filename)) and os.path.isfile(os.path.abspath(filename)) and os.access(os.path.abspath(filename), R_OK):
+            return True
+        fullPath = string.join(os.getcwd(), filename[1:])
+        return os.path.exists(fullPath) and os.path.isfile(fullPath) and os.access(fullPath, R_OK)
+    except IOError:
+        return False
 
 def parallel_DBR_dict(in_dir, seqType, dbr_start, dbr_stop, test_dict = False, save = None):
     #if not checkDir(in_dir):
@@ -179,8 +198,7 @@ out_seqs = '/home/antolinlab/Desktop/CSU_ChronicWasting/PilotAnalysis/DBR_filter
 barcode_file = '/home/antolinlab/Desktop/CSU_ChronicWasting/PilotAnalysis/pilot_barcode_file'
 '''
 
-#TODO: this should be qual_median!! 
-def qual_mode(QUAL, phred_dict):
+def qual_median(QUAL, phred_dict):
     
     listQUAL = list(QUAL)
     list_intQUAL =[]
@@ -196,11 +214,12 @@ def qual_mode(QUAL, phred_dict):
         median_qual = list_intQUAL[qlen/2]
     return median_qual
     
-def find_SampleID(filename):
+def find_SampleID(filename, r):
     #sampleID_match = re.match(".*(\d{3}[a-z]?).*", filename)
     # this revision is VERY specific to my technical replicates
     # TODO: find a way to pass the regex capture group as an argument so that this (and related functions) are more flexible
-    sampleID_match = re.match(".*(\d{1,3}T?).*", filename)
+    #sampleID_match = re.match(".*(\d{1,3}T?).*", filename)
+    sampleID_match = re.match(r, filename)
     if sampleID_match:
         sampleID = sampleID_match.groups()[0]
         return sampleID
@@ -253,6 +272,7 @@ def DBR_Filter(assembled_dir, # the SAM files for the data mapped to pseudorefer
                n_expected, # the number of differences to be tolerated
                barcode_dir, # the barcodes for individuals in the library referenced in dict_in
                dict_dir, # a single dictionary of DBRs (for one library only)
+               sample_regex, # regular expression to find the sample ID
                barcode_file=None, # if just a single library is being used, can directly pass the barcode file
                test_dict=True, # optionally print testing info to stdout for checking the dictionary construction
                phred_dict=phred_dict, # dictionary containing ASCII quality filter scores to help with tie breaks
@@ -273,8 +293,10 @@ def DBR_Filter(assembled_dir, # the SAM files for the data mapped to pseudorefer
             
         if 'unmatched' not in i: # skip the SAM files with sequences that didn't match
             
+            print i
+            
             # extract the sample ID with a regex
-            sampleID = find_SampleID(i)
+            sampleID = find_SampleID(i, sample_regex) # find the sample ID, potentially with some extra characters to distinguish from library ID
             
             # extract the library ID with a regex
             libraryID = find_LibraryID(i)
@@ -295,24 +317,24 @@ def DBR_Filter(assembled_dir, # the SAM files for the data mapped to pseudorefer
                 if not os.path.exists(out_dir):
                     os.makedirs(out_dir)
             
-                out_seqs_final = out_dir + '/DBR_filtered_sequences_' + libraryID + '.fastq'
+                out_seqs_final = out_dir + '/DBR_filtered_sequences_' + libraryID + '_' + sampleID + '.fastq'
             
                 #os.path.isfile(fname)
     
                 with open(out_seqs_final, 'a') as out_file:
                     
-                    bc_dict = {} # define empty container for barcode dictionary
+                    #bc_dict = {} # define empty container for barcode dictionary
             
-                    with open(bcf, 'r') as bc:
-                        for line in bc:
-                            row=line.split()
-                            bc_dict[row[0]]=row[1]
+                    #with open(bcf, 'r') as bc:
+                    #    for line in bc:
+                    #        row=line.split()
+                    #        bc_dict[row[0]]=row[1]
             
                         print 'Opening DBR dictionary ' + dict_in  
                         with open(dict_in, 'r') as f:
                             dbr = json.load(f)
                             
-                            original_barcode = bc_dict[sampleID]
+                            #original_barcode = bc_dict[sampleID]
                             #print original_barcode
                             # suggestion on error checking: 
                             # normally i capture the .match() value and say 'if object:"
@@ -427,13 +449,13 @@ def DBR_Filter(assembled_dir, # the SAM files for the data mapped to pseudorefer
                                             #print 'Subvalue', subvalue
                                             dbr_value = subvalue[0] 
                                             count = subvalue[1]
+                                            qname_qual = assembly_dict_3[RNAME][dbr_value] #this is a list of lists: [[QNAME, QUAL, SEQ], [QNAME, QUAL, SEQ], ...]
                                             if count > n_expected:
                                                 ##################################################
                                                 ## THIS IS WHERE THE FILTERING HAPPENS           #
                                                 ##################################################
                                                 #print 'count', count, 'n exp', n_expected
                                                 # the other dictionary contains the full quality information for each RNAME:DBR pair (this will be multiple entries of sequence IDs and qualities
-                                                qname_qual = assembly_dict_3[RNAME][dbr_value] #this is a list of lists: [[QNAME, QUAL, SEQ], [QNAME, QUAL, SEQ], ...]
                                                 #print RNAME, dbr_value, len(qname_qual)
                                                 #print qname_qual
                                                 ID_quals = {} # we'll make yet another dictionary to store the QNAME and the median QUAL
@@ -441,20 +463,19 @@ def DBR_Filter(assembled_dir, # the SAM files for the data mapped to pseudorefer
                                                     id_val=i[0] # this is the QNAME (Illumina ID)
                                                     id_seq=i[2] # the full sequence
                                                     id_qual=i[1] # the full quality
-                                                    ID_quals[id_val] = (qual_mode(i[1], phred_dict), id_seq, id_qual)
+                                                    ID_quals[id_val] = (qual_median(i[1], phred_dict), id_seq, id_qual)
                                                 n_remove = count - n_expected
                                                 total_removed += n_remove
-                                                t = 0
-                                                k = 1
-                                                while k <= n_expected:
-                                                    to_keep = max(ID_quals, key=lambda x:ID_quals[x]) 
-                                                    #print(to_keep)
-                                                    keep = ID_quals[to_keep]
-                                                    keep_list.append(to_keep)
+                                                to_keep = heapq.nlargest(n_expected, ID_quals, key=lambda x:ID_quals[x])
+                                                #to_keep = max(ID_quals, key=lambda x:ID_quals[x]) 
+                                                for k in to_keep:
+                                                    keep = ID_quals[k] # get the full data for the highest median sequences
                                                     #write out the data to keep, appending the original barcode to the beginning of the sequence
-                                                    out_file.write('@'+to_keep+'\n'+ original_barcode+keep[1]+'\n+\n'+ "KKKKK"+keep[2]+'\n')
-                                                    #out_file.write([keep.split('\n', 1)[0] for i in keep])
-                                                    k += 1
+                                                    out_file.write('@'+k+'\n'+ keep[1]+'\n+\n'+ keep[2]+'\n')
+                                            else: # if count <= n_expected, we can just keep every entry associated with that RNAME
+                                                for i in qname_qual:
+                                                    out_file.write('@'+i[0]+'\n'+i[2]+'\n+\n'+i[1]+'\n') # see above for i[index] definitions
+                                                
                                 with open(logfile,'a') as log:
                                     log.write(sampleID+','+str(total_removed)+','+str(n_primary)+','+time.strftime("%d/%m/%Y")+','+(time.strftime("%H:%M:%S"))+'\n')
                                     print 'Removed ' + str(total_removed) + ' PCR duplicates out of ' + str(n_primary) + ' primary mapped reads.'                                                    
