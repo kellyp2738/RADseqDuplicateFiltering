@@ -42,6 +42,128 @@ import pdb
 #               out_seqs = '/path/to/filtered_library1.fastq',
 #               n_expected = 2)
 
+def parallel_DBR_dict(in_dir, seqType, dbr_start, dbr_stop, test_dict = False, save = None):
+    #if not checkDir(in_dir):
+    #    raise IOError("Input is not a directory: %s" % in_dir)
+    if seqType == 'read2':
+        warnings.warn('Expect directory containing only Read 2 files; any other files present in %s will be incorporated into DBR dictionary.' % in_dir)
+    elif seqType == 'pear':
+        warnings.warn('Expect directory containing only merged Read 1 and Read 2 files; any other files present in %s will be incorporated into DBR directory' % in_dir)
+    else:
+        raise IOError("Input sequence type specified as %s. Options are 'pear' or 'read2'." % seqType)
+    
+    dbrProcess = [mp.Process(target=DBR_dict, args=(in_dir+in_file, 
+                                                    seqType,
+                                                    dbr_start,
+                                                    dbr_stop,
+                                                    test_dict,
+                                                    save)) for in_file in in_dir]
+     
+    for dP in dbrProcess:
+        dP.start()
+    for dP in dbrProcess:
+        dP.join()
+
+def DBR_dict(in_file, dbr_start, dbr_stop, test_dict = False, save = None):
+    # DBR is in read 2
+    # if merged, it will be the last -2 to -9 (inclusive) bases, starting with base 0 and counting from the end
+    # if not merged, it will be bases 2 to 9
+    if not checkFile(in_file):
+        raise IOError("where is the input file: %s" % in_file)
+    info('Creating {ID: dbr} dictionary from %s.' % in_file)
+    dbr = {}
+    fq_line = 1
+    if in_file.endswith('gz'):
+        openFxn = gzip.open
+    else:
+        openFxn = open
+    with openFxn(in_file, 'r') as db:
+        for line in db:
+            if fq_line == 1:
+                ID = re.split('(\d[:|_]\d+[:|_]\d+[:|_]\d+)', line)[1]
+                fq_line = 2
+            elif fq_line == 2:
+                seq = list(line) # split the sequence line into a list
+                tag = ''.join(seq[dbr_start:dbr_stop])
+                dbr[ID] = tag
+                fq_line = 3
+            elif fq_line == 3:
+                fq_line = 4
+            elif fq_line == 4:
+                fq_line = 1
+    if test_dict:
+        print 'Checking DBR dictionary format.'
+        x = itertools.islice(dbr.iteritems(), 0, 4)
+        for key, value in x:
+            print key, value
+        #print dbr['8:1101:15808:1492'] # this is the first entry in /home/antolinlab/Downloads/CWD_RADseq/pear_merged_Library12_L8.assembled.fastq
+    if save:
+        if not os.path.exists(save):
+            os.makedirs(save)
+        fq_name = os.path.splitext(in_file)[0]
+        fq_dbr_out = fq_name + save + '.json'
+        print 'Writing dictionary to ' + fq_dbr_out
+        with open(fq_dbr_out, 'w') as fp:          
+            json.dump(dbr, fp)
+
+def parallel_DBR_count(in_dir, dbr_start, dbr_stop, save = None, saveType = 'json'):
+    #if not checkDir(in_dir):
+    #    raise IOError("Input is not a directory: %s" % in_dir)
+    infiles = os.listdir(in_dir)
+    dbrCountProcess = [mp.Process(target=DBR_count, args=(os.path.join(in_dir+in_file), 
+                                                          dbr_start,
+                                                          dbr_stop,
+                                                          save,
+                                                          saveType)) for in_file in infiles]
+     
+    for dc in dbrCountProcess:
+        dc.start()
+    for dc in dbrCountProcess:
+        dc.join()
+
+def DBR_count(in_file, dbr_start, dbr_stop, save = None, saveType = None):
+    # DBR is in read 2
+    # if merged, it will be the last -2 to -9 (inclusive) bases, starting with base 0 and counting from the end
+    # if not merged, it will be bases 2 to 9
+    if not checkFile(in_file):
+        raise IOError("where is the input file: %s" % in_file)
+    info('Creating {dbr : count} dictionary from %s.' % in_file)
+    dbr = {}
+    fq_line = 1
+    if in_file.endswith('gz'):
+        openFxn = gzip.open
+    else:
+        openFxn = open
+    with openFxn(in_file, 'r') as db:
+        for line in db:
+            if fq_line == 1:
+                fq_line = 2
+            elif fq_line == 2:
+                dbr_value = line[dbr_start:dbr_stop]
+                if dbr_value in dbr:
+                    dbr[dbr_value]+=1
+                else:
+                    dbr[dbr_value]=1
+                fq_line = 3
+            elif fq_line == 3:
+                fq_line = 4
+            elif fq_line == 4:
+                fq_line = 1
+    if saveType:
+        if not os.path.exists(save):
+            os.makedirs(save)
+        fq_base = os.path.splitext(os.path.split(in_file)[1])[0]
+        #fq_name = os.path.splitext(in_file)[0]
+        if saveType == 'json':
+            fq_dbr_out = save + fq_base + '.json'
+            print 'Writing dictionary to ' + fq_dbr_out
+            with open(fq_dbr_out, 'w') as fp:          
+                json.dump(dbr, fp)
+        elif saveType == 'text':
+            fq_dbr_out = save + fq_base + '.txt'
+            with open(fq_dbr_out, 'w') as fp:
+                for key, value in dbr.items():
+                    fp.write(key + ',' + str(value) + '\n')
 
 phred_dict = {'"':1.0,"#":2.0,"$":3.0,"%":4.0,"&":5.0,"'":6.0,"(":7.0,")":8.0,"*":9.0,"+":10.0,
               ",":11.0,"-":12.0,".":13.0,"/":14.0,"0":15.0,"1":16,"2":17.0,"3":18.0,"4":19.0,"5":20.0,
