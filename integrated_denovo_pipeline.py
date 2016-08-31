@@ -229,9 +229,9 @@ def qc_loop(in_dir, out_dir, cut_min, cut_max, read=None):
     cmdTemplate = Template("zcat $f | sed -n '2~4'p | cut -c $cut_min-$cut_max | sort | uniq -c | sort -nr -k 1 > $out")
     
     for f in correct_reads:
-        
-        f_in = os.path.join(in_dir, f, 'output.txt')
+        f_in = os.path.join(in_dir, f)
         fq_name = os.path.splitext(f)[0]
+        f_out = fq_name + '_output.txt'
         out = os.path.join(out_dir, fq_name)
         cmd = cmdTemplate.substitute(f=f_in,
                                      cut_min=cut_min,
