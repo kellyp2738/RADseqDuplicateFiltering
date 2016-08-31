@@ -230,9 +230,15 @@ def qc_loop(in_dir, out_dir, cut_min, cut_max, read=None):
     
     for f in correct_reads:
         f_in = os.path.join(in_dir, f)
-        fq_name = os.path.splitext(f)[0]
-        f_out = fq_name + '_output.txt'
-        out = os.path.join(out_dir, fq_name)
+        if "_" in f: # if the naming convention includes underscores we can split on that (assume also the first element in the resulting list is informative)
+            fq_name = f.split("_")[0]
+        else:
+            fq_name = os.path.splitext(f)[0]
+        if read:
+            f_out = fq_name + '_' + read + '_output.txt'
+        else:
+            f_out = fq_name + '_' + read + '_output.txt'
+        out = os.path.join(out_dir, fq_out)
         cmd = cmdTemplate.substitute(f=f_in,
                                      cut_min=cut_min,
                                      cut_max=cut_max,
