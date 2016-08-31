@@ -230,7 +230,7 @@ def qc_loop(in_dir, out_dir, cut_min, cut_max, read=None):
     
     for f in correct_reads:
         
-        f_in = os.path.join(in_dir, f)
+        f_in = os.path.join(in_dir, f, 'output.txt')
         fq_name = os.path.splitext(f)[0]
         out = os.path.join(out_dir, fq_name)
         cmd = cmdTemplate.substitute(f=f_in,
