@@ -222,7 +222,7 @@ def qc_loop(in_dir, out_dir, cut_min, cut_max, read=None):
     if read:
         rex_uncompiled = rexTemplate.substitute(read=read)
         rex = re.compile(rex_uncompiled)
-        correct.reads = [m.group(0) for f in files for m in [rex.search(f)] if m]
+        correct_reads = [m.group(0) for f in files for m in [rex.search(f)] if m]
     else:
         correct_reads = files
     
