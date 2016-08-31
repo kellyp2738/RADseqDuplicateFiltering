@@ -82,16 +82,19 @@ phred_dict = {'"':1.0,"#":2.0,"$":3.0,"%":4.0,"&":5.0,"'":6.0,"(":7.0,")":8.0,"*
 #               out_seqs = '/path/to/filtered_library1.fastq',
 #               n_expected = 2)
 
-def qc_loop(in_dir, cut_min, cut_max):
+def qc_loop(in_dir, out_dir, cut_min, cut_max):
     files = os.listdir(in_dir)
     
-    cmdTemplate = Template("zcat $f | sed '2~4p' | cut -c $cut_min-$cut_max | sort | uniq -c | sort -nr -k 1")
+    cmdTemplate = Template("zcat $f | sed '2~4p' | cut -c $cut_min-$cut_max | sort | uniq -c | sort -nr -k 1 > $out")
     
     #qc_process = []
     for f in files:
+        fq_name = os.path.splitext(f)[0]
+        out = os.path.join(out, fq_name)
         cmd = cmdTemplate.substitute(f=f,
                                      cut_min=cut_min,
-                                     cut_max=cut_max)
+                                     cut_max=cut_max,
+                                     out=out)
         #qc_process.append(cmd)
         processQueue.put(Work(commandline = cmd, shell = True), True, 360)
     
