@@ -220,9 +220,10 @@ def qc_loop(in_dir, out_dir, cut_min, cut_max):
     
     #qc_process = []
     for f in files:
+        f_in = os.path.join(in_dir, f)
         fq_name = os.path.splitext(f)[0]
         out = os.path.join(out_dir, fq_name)
-        cmd = cmdTemplate.substitute(f=f,
+        cmd = cmdTemplate.substitute(f=f_in,
                                      cut_min=cut_min,
                                      cut_max=cut_max,
                                      out=out)
