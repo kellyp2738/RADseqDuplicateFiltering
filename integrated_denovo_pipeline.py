@@ -478,7 +478,7 @@ def parallel_PEAR_assemble(regexR1, regexR2, regexLibrary, pearPath, in_dir, out
     for mP in mergedProcess:
         mP.join()
     
-def PEAR_assemble(R1, R2, out_dir, out_file, extra_params=None, pearPath):
+def PEAR_assemble(R1, R2, pearPath, out_dir, out_file, extra_params=None):
     if not checkFile(R1):
         raise IOError("Where is the Read 1 file: %s" % R1)
     if not checkFile(R2):
@@ -580,7 +580,7 @@ def FASTQ_quality_filter(in_file, out_file, q, p, qualityFilter):
 
 ## TRIM R2 END OF MERGED SEQUENCE BEFORE DEMULTIPLEXING TO ENFORCE UNIFORM READ LENGTH?
 
-def parallel_Trim(in_dir, out_dir, first_base, last_base=None, suffix = '_trimmed.fq', trimPath):
+def parallel_Trim(in_dir, out_dir, first_base, trimPath, last_base=None, suffix = '_trimmed.fq'):
     
     # new directory for trimmed files
     if not os.path.exists(out_dir):
@@ -603,7 +603,7 @@ def parallel_Trim(in_dir, out_dir, first_base, last_base=None, suffix = '_trimme
     for tP in trimProcess:
         tP.join()
 
-def Trim(in_file, out_file, first_base, last_base=None, trimPath):    
+def Trim(in_file, out_file, first_base, trimPath, last_base=None):    
     
     info('Trimming DBR and enzyme cut sites from %s with FASTX Toolkit.' % in_file)
     
@@ -666,7 +666,7 @@ def iterative_Demultiplex(in_dir, # directory of un-demultiplexed libraries
         dP.join()
                 
 
-def Demultiplex(in_file, barcode_file, out_dir, out_prefix = 'demultiplexed_', demultiplexPath): 
+def Demultiplex(in_file, barcode_file, out_dir, demultiplexPath, out_prefix = 'demultiplexed_'): 
 #	if not checkFile(in_file):
 #        raise IOError("Input is not a file: %s" % in_file)
 #	if not checkFile(barcode_file):
