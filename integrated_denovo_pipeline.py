@@ -238,7 +238,7 @@ def qc_loop(in_dir, out_dir, cut_min, cut_max, read=None):
             f_out = fq_name + '_' + read + '_output.txt'
         else:
             f_out = fq_name + '_' + read + '_output.txt'
-        out = os.path.join(out_dir, fq_out)
+        out = os.path.join(out_dir, f_out)
         cmd = cmdTemplate.substitute(f=f_in,
                                      cut_min=cut_min,
                                      cut_max=cut_max,
