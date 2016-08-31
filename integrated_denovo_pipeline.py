@@ -455,7 +455,7 @@ def DBR_dict(in_file, seqType, dbr_start, dbr_stop, test_dict = False, save = No
         with open(fq_dbr_out, 'w') as fp:          
             json.dump(dbr, fp)
             
-def parallel_PEAR_assemble(regexR1, regexR2, regexLibrary, in_dir, out_dir, out_name = 'pear_merged_', extra_params=None, pearPath):
+def parallel_PEAR_assemble(regexR1, regexR2, regexLibrary, pearPath, in_dir, out_dir, out_name = 'pear_merged_', extra_params=None):
     files = os.listdir(in_dir)
     
     #print(in_dir, files)
