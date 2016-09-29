@@ -270,6 +270,7 @@ def concatenate(read1, read2, out_name):
     with open(read1) as f1:
         with open(read2) as f2:
             with open(out_name, 'w') as outf:
+                fq_line = 1 # always start with the first line
                 for line in itertools.izip(f1, f2):
                     if fq_line == 1:
                         outf.write(line[0]+'\n') # just take the header from R1
