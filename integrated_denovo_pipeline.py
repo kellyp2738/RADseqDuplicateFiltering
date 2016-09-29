@@ -269,7 +269,7 @@ def parallel_concatenate(in_dir, regexR1, regexR2, out_dir):
 def concatenate(read1, read2, out_name):
     with open(read1) as f1:
         with open(read2) as f2:
-            with open(out_name, w) as outf:
+            with open(out_name, 'w') as outf:
                 for line in itertools.izip(f1, f2):
                     if fq_line == 1:
                         outf.write(line[0]+'\n') # just take the header from R1
