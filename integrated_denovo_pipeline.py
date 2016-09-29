@@ -246,6 +246,55 @@ def qc_loop(in_dir, out_dir, cut_min, cut_max, read=None):
         processQueue.put(Work(commandline = cmd, shell = True), True, 360)
     
     processQueue.join()
+
+def parallel_concatenate(in_dir, regexR1, regexR2, out_dir):
+    # this function won't work if in_dir has other files (that contain the regexes)
+    files = os.listdir(in_dir)
+    if not os.path.exists(out_dir):
+        os.makedirs(out_dir)
+    out_name =    
+    #print(in_dir, files)
+    # find Read 1 and Read 2 files
+    read1 = fnmatch.filter(files, '*'+regexR1+'*')
+    #read2 = fnmatch.filter(files, '*'+regexR2+'*')
+    
+    # assemble parallel processes (calls to function PEAR_assemble)
+    catProcess = [mp.Process(target=concatenate, args=(in_dir + r1,
+                                                            in_dir + re.sub(regexR1, regexR2, r1),
+                                                            os.path.join(out_dir, r1+'.cat'))) for r1 in read1]
+    for cP in catProcess:
+        cP.start()
+    for cP in catProcess:
+        cP.join()
+        
+def concatenate(read1, read2, out_name):
+    with open(file1) as f1:
+        with open(file2) as f2:
+            with open(out_name) as outf:
+                for line in itertools.izip(f1, f2):
+                    if fq_line == 1:
+                        outf.write(line[0]+'\n') # just take the header from R1
+                        fq_line = 2
+                    if fq_line == 2:
+                        # this is the pattern that will work for lines 2 and 4 (sequence and quality)
+                        part1 = line[0].strip()
+                        part2 = line[1][::-1].strip()
+                        concat = ''.join([part1, part2])
+                        finalConcat = rmwhite.sub('', concat)
+                        #print finalConcat
+                        outf.write(finalConcat+'\n')
+                        fq_line = 3
+                    if fq_line == 3:
+                        outf.write(line[0]+'\n') # just take the spacer from R1
+                        fq_line = 4
+                    if fq_line == 4:
+                        part1 = line[0].strip()
+                        part2 = line[1][::-1].strip()
+                        concat = ''.join([part1, part2])
+                        finalConcat = rmwhite.sub('', concat)
+                        outf.write(finalConcat+'\n')
+                        fq_line = 1
+            
         
 def parallel_PEAR_assemble(regexR1, regexR2, regexLibrary, in_dir, out_dir, pearPath, out_name = 'pear_merged_', extra_params=None):
     files = os.listdir(in_dir)
