@@ -252,7 +252,6 @@ def parallel_concatenate(in_dir, regexR1, regexR2, out_dir):
     files = os.listdir(in_dir)
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
-    out_name =    
     #print(in_dir, files)
     # find Read 1 and Read 2 files
     read1 = fnmatch.filter(files, '*'+regexR1+'*')
