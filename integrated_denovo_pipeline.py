@@ -259,7 +259,7 @@ def parallel_concatenate(in_dir, regexR1, regexR2, out_dir):
     
     # assemble parallel processes (calls to function PEAR_assemble)
     catProcess = [mp.Process(target=concatenate, args=(os.path.join(in_dir, r1),
-                                                            os.path.join(in_dir + re.sub(regexR1, regexR2, r1)),
+                                                            os.path.join(in_dir, re.sub(regexR1, regexR2, r1)),
                                                             os.path.join(out_dir, r1+'.cat'))) for r1 in read1]
     for cP in catProcess:
         cP.start()
