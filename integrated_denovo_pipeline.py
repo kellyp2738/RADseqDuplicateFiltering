@@ -258,8 +258,8 @@ def parallel_concatenate(in_dir, regexR1, regexR2, out_dir):
     #read2 = fnmatch.filter(files, '*'+regexR2+'*')
     
     # assemble parallel processes (calls to function PEAR_assemble)
-    catProcess = [mp.Process(target=concatenate, args=(in_dir + r1,
-                                                            in_dir + re.sub(regexR1, regexR2, r1),
+    catProcess = [mp.Process(target=concatenate, args=(os.path.join(in_dir, r1),
+                                                            os.path.join(in_dir + re.sub(regexR1, regexR2, r1)),
                                                             os.path.join(out_dir, r1+'.cat'))) for r1 in read1]
     for cP in catProcess:
         cP.start()
