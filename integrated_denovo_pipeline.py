@@ -267,8 +267,8 @@ def parallel_concatenate(in_dir, regexR1, regexR2, out_dir):
         cP.join()
         
 def concatenate(read1, read2, out_name):
-    with open(file1) as f1:
-        with open(file2) as f2:
+    with open(read1) as f1:
+        with open(read2) as f2:
             with open(out_name) as outf:
                 for line in itertools.izip(f1, f2):
                     if fq_line == 1:
