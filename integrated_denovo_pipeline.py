@@ -267,8 +267,8 @@ def parallel_concatenate(in_dir, regexR1, regexR2, out_dir):
         cP.join()
         
 def concatenate(read1, read2, out_name):
-    with open(read1) as f1:
-        with open(read2) as f2:
+    with gzip.open(read1) as f1:
+        with gzip.open(read2) as f2:
             with open(out_name, 'w') as outf:
                 fq_line = 1 # always start with the first line
                 rmwhite = re.compile(r'\s+')
