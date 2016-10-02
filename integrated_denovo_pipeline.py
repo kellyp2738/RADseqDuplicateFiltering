@@ -274,8 +274,8 @@ def concatenate(read1, read2, out_name):
                 rmwhite = re.compile(r'\s+')
                 for line in itertools.izip(f1, f2):
                     if fq_line == 1:
-                        pdb.set_trace()
-                        outf.write(line[0]+'\n') # just take the header from R1
+                        raise Exception((line[0]))
+                        outf.write(line[0].ltrim().rtrim()+'\n') # just take the header from R1
                         fq_line = 2
                     if fq_line == 2:
                         # this is the pattern that will work for lines 2 and 4 (sequence and quality)
@@ -284,17 +284,17 @@ def concatenate(read1, read2, out_name):
                         concat = ''.join([part1, part2])
                         finalConcat = rmwhite.sub('', concat)
                         #print finalConcat
-                        outf.write(finalConcat+'\n')
+                        outf.write(finalConcat.ltrim().rtrim()+'\n')
                         fq_line = 3
                     if fq_line == 3:
-                        outf.write(line[0]+'\n') # just take the spacer from R1
+                        outf.write(line[0].ltrim().rtrim()+'\n') # just take the spacer from R1
                         fq_line = 4
                     if fq_line == 4:
                         part1 = line[0].strip()
                         part2 = line[1][::-1].strip()
                         concat = ''.join([part1, part2])
                         finalConcat = rmwhite.sub('', concat)
-                        outf.write(finalConcat+'\n')
+                        outf.write(finalConcat.ltrim().rtrim()+'\n')
                         fq_line = 1
             
         
