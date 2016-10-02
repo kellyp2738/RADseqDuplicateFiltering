@@ -274,6 +274,7 @@ def concatenate(read1, read2, out_name):
                 rmwhite = re.compile(r'\s+')
                 for line in itertools.izip(f1, f2):
                     if fq_line == 1:
+                        pdb.set_trace()
                         outf.write(line[0]+'\n') # just take the header from R1
                         fq_line = 2
                     if fq_line == 2:
