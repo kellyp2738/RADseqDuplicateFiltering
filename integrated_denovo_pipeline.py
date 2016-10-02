@@ -277,7 +277,7 @@ def concatenate(read1, read2, out_name):
                         outf.write(line[0]+'\n') # just take the header from R1
                         fq_line = 2
                     if fq_line == 2:
-                        raise Exception((line[0]))
+                        raise Exception((line[0], read1, read2))
                         # this is the pattern that will work for lines 2 and 4 (sequence and quality)
                         part1 = line[0].strip()
                         part2 = line[1][::-1].strip()
