@@ -274,10 +274,10 @@ def concatenate(read1, read2, out_name):
                 rmwhite = re.compile(r'\s+')
                 for line in itertools.izip(f1, f2):
                     if fq_line == 1:
-                        raise Exception((line[0]))
                         outf.write(line[0].ltrim().rtrim()+'\n') # just take the header from R1
                         fq_line = 2
                     if fq_line == 2:
+                        raise Exception((line[0]))
                         # this is the pattern that will work for lines 2 and 4 (sequence and quality)
                         part1 = line[0].strip()
                         part2 = line[1][::-1].strip()
