@@ -276,7 +276,7 @@ def concatenate(read1, read2, out_name):
                     if fq_line == 1:
                         outf.write(line[0]+'\n') # just take the header from R1
                         fq_line = 2
-                    if fq_line == 2:
+                    elif fq_line == 2:
                         raise Exception((line[0], read1, read2))
                         # this is the pattern that will work for lines 2 and 4 (sequence and quality)
                         part1 = line[0].strip()
@@ -286,10 +286,10 @@ def concatenate(read1, read2, out_name):
                         #print finalConcat
                         outf.write(finalConcat+'\n')
                         fq_line = 3
-                    if fq_line == 3:
+                    elif fq_line == 3:
                         outf.write(line[0]+'\n') # just take the spacer from R1
                         fq_line = 4
-                    if fq_line == 4:
+                    elif fq_line == 4:
                         part1 = line[0].strip()
                         part2 = line[1][::-1].strip()
                         concat = ''.join([part1, part2])
