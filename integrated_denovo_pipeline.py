@@ -285,14 +285,40 @@ def concatenate(read1, read2, out_name):
                         outf.write(finalConcat+'\n')
                         fq_line += 1
 
+def parallel_merge_lanes(in_dir, regexLibrary, out_dir, out_suffix = '_qual_filtered_fully_concatenated.fq.gz'):
+	files = os.listdir(in_dir)
+	lib_set = set([])
+	mergeLaneProcess = []
+	for f in files:
+		lib_set.add(find_LibraryID(filename, regexLibrary) # add library ID to set (implicitly ignore duplicates)
+	for lib in lib_set:
+		libFiles = fnmatch.filter(files, '*'+regexLibrary+'*') # get all files for a given library
+		out_name = os.path.join(out_dir, lib + out_suffix)
+		mergeLaneProcess.append(mp.Process(target=merge_lanes, args=(laneList = libFiles, out_name = out_name)
+		
+	for mlP in mergeLaneProcess:
+        mlP.start()
+    for mlP in mergeLaneProcess:
+        mlP.join()
+
+def merge_lanes(laneList, out_dir, out_name):
+	if not os.path.exists(out_dir):
+		os.makedirs(out_dir)
+		
+	mergeLanesTemplate = Template('cat $f > $out')
+    formatted_inputs = ' '.join(laneList) # so that the brackets and quotes don't print
+    commandLine = mergeLanesTemplate.substitute(f = formatted_inputs, out = out_name)
+    subprocess.call(commandLine, shell=True)
+
 def parallel_PEAR_assemble(regexR1, regexR2, regexLibrary, in_dir, out_dir, pearPath, out_name = 'pear_merged_', extra_params=None):
     files = os.listdir(in_dir)
     
-    #print(in_dir, files)
     # find Read 1 file
     read1 = fnmatch.filter(files, '*'+regexR1+'*')
+    
     # which library?
     read1Library = find_LibraryID(read1, regexLibrary)
+    
     # file name for output
     out_file = out_name + read1Library
     
