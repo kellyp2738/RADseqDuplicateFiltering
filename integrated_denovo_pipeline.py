@@ -297,9 +297,9 @@ def parallel_merge_lanes(in_dir, regexLibrary, out_dir, out_suffix = '_qual_filt
 		mergeLaneProcess.append(mp.Process(target=merge_lanes, args=(libFiles, out_name)))
 		
 	for mlP in mergeLaneProcess:
-        mlP.start()
-    for mlP in mergeLaneProcess:
-        mlP.join()
+		mlP.start()
+	for mlP in mergeLaneProcess:
+		mlP.join()
 
 def merge_lanes(laneList, out_dir, out_name):
 	if not os.path.exists(out_dir):
