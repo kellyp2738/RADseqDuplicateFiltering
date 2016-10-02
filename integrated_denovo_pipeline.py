@@ -267,17 +267,21 @@ def parallel_concatenate(in_dir, regexR1, regexR2, out_dir):
         cP.join()
         
 def concatenate(read1, read2, out_name):
-    fq_line = 1 # always start with the first line
+    #fq_line = 1 # always start with the first line
+    fq_line = 0
     with gzip.open(read1) as f1:
         with gzip.open(read2) as f2:
             with open(out_name, 'w') as outf:
                 rmwhite = re.compile(r'\s+')
                 for line in itertools.izip(f1, f2):
-                    if fq_line == 1:
+                    #if fq_line == 1:
+                    if fq_line %4 == 0:
                         outf.write(line[0]+'\n') # just take the header from R1
-                        fq_line = 2
-                    elif fq_line == 2:
-                        raise Exception((line[0], read1, read2))
+                        #fq_line = 2
+                        fq_line += 1
+                    #elif fq_line == 2:
+                    elif fq_line %4 == 1:
+                        #raise Exception((line[0], read1, read2))
                         # this is the pattern that will work for lines 2 and 4 (sequence and quality)
                         part1 = line[0].strip()
                         part2 = line[1][::-1].strip()
@@ -285,17 +289,22 @@ def concatenate(read1, read2, out_name):
                         finalConcat = rmwhite.sub('', concat)
                         #print finalConcat
                         outf.write(finalConcat+'\n')
-                        fq_line = 3
-                    elif fq_line == 3:
+                        #fq_line = 3
+                        fq_line += 1
+                    #elif fq_line == 3:
+                    elif fq_line %4 == 2:
                         outf.write(line[0]+'\n') # just take the spacer from R1
-                        fq_line = 4
-                    elif fq_line == 4:
+                        #fq_line = 4
+                        fq_line += 1
+                    #elif fq_line == 4:
+                    elif fq_line %4 == 3:
                         part1 = line[0].strip()
                         part2 = line[1][::-1].strip()
                         concat = ''.join([part1, part2])
                         finalConcat = rmwhite.sub('', concat)
                         outf.write(finalConcat+'\n')
-                        fq_line = 1
+                        #fq_line = 1
+                        fq_line += 1
             
         
 def parallel_PEAR_assemble(regexR1, regexR2, regexLibrary, in_dir, out_dir, pearPath, out_name = 'pear_merged_', extra_params=None):
