@@ -298,7 +298,7 @@ def parallel_merge_lanes(in_dir, regexLibrary, out_dir, out_suffix = '_qual_filt
 		libRegex = re.compile(lib)
 		libFiles = filter(libRegex.match, files) # get all files for a given library
 		out_name = os.path.join(out_dir, lib + out_suffix)
-		mergeLaneProcess.append(mp.Process(target=merge_lanes, args=(libFiles, out_name)))
+		mergeLaneProcess.append(mp.Process(target=merge_lanes, args=(libFiles, out_dir, out_name)))
 		
 	for mlP in mergeLaneProcess:
 		mlP.start()
