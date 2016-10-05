@@ -174,7 +174,7 @@ def find_SampleID(filename, regexSample):
 def find_LibraryID(filename, regexLibrary):
     #libraryID_match = re.match(".*(Library\d{2,3}).*", filename)
     #libraryID_match = re.match(".*(Library\d{1,3}[A|B]?).*", filename)
-    libraryID_match = re.match('.*('+regexLibrary+').*')
+    libraryID_match = re.match('.*('+regexLibrary+').*', filename)
     if libraryID_match: # if we get a match (this allows the script to proceed if a file has a mismatched name)
         libraryID = libraryID_match.groups()[0] # extract the library ID match
         return libraryID 
@@ -292,7 +292,8 @@ def parallel_merge_lanes(in_dir, regexLibrary, out_dir, out_suffix = '_qual_filt
 	for f in files:
 		lib_set.add(find_LibraryID(filename, regexLibrary)) # add library ID to set (implicitly ignore duplicates)
 	for lib in lib_set:
-		libFiles = fnmatch.filter(files, '*'+regexLibrary+'*') # get all files for a given library
+		libRegex = re.compile(lib)
+		libFiles = filter(libRegex.match, files) # get all files for a given library
 		out_name = os.path.join(out_dir, lib + out_suffix)
 		mergeLaneProcess.append(mp.Process(target=merge_lanes, args=(libFiles, out_name)))
 		
