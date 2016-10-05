@@ -290,6 +290,7 @@ def parallel_merge_lanes(in_dir, regexLibrary, out_dir, out_suffix = '_qual_filt
 	lib_set = set([])
 	mergeLaneProcess = []
 	for f in files:
+		print f
 		lib = find_LibraryID(filename, regexLibrary)
 		print lib
 		lib_set.add(find_LibraryID(filename, regexLibrary)) # add library ID to set (implicitly ignore duplicates)
