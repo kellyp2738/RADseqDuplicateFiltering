@@ -380,7 +380,8 @@ def parallel_FASTQ_quality_filter(in_dir, out_dir, out_name, q, p, qualityFilter
     
     # find all the files in the input directory
     files = os.listdir(in_dir)
-    
+    print 'Inputs:', in_dir, files
+    print 'Outputs:', out_dir
     # make the output directory
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
