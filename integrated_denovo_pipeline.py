@@ -290,10 +290,10 @@ def parallel_merge_lanes(in_dir, regexLibrary, out_dir, out_suffix = '_qual_filt
 	lib_set = set([])
 	mergeLaneProcess = []
 	for f in files:
-		print f
-		lib = find_LibraryID(f, regexLibrary)
-		print lib
-		lib_set.add(find_LibraryID(f, regexLibrary)) # add library ID to set (implicitly ignore duplicates)
+		#print f
+		#lib = find_LibraryID(f, regexLibrary)
+		#print lib
+		lib_set.add(os.path.join(in_dir, find_LibraryID(f, regexLibrary))) # add library ID to set (use full path; implicitly ignore duplicates)
 	for lib in lib_set:
 		libRegex = re.compile(lib)
 		libFiles = filter(libRegex.match, files) # get all files for a given library
