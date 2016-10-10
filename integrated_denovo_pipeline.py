@@ -297,6 +297,7 @@ def parallel_merge_lanes(in_dir, regexLibrary, out_dir, out_suffix = '_qual_filt
 	for lib in lib_set:
 		libRegex = re.compile(lib)
 		libFiles = filter(libRegex.match, files) # get all files for a given library
+		print 'parallel output', libFiles
 		out_name = os.path.join(out_dir, lib + out_suffix)
 		mergeLaneProcess.append(mp.Process(target=merge_lanes, args=(libFiles, out_dir, out_name)))
 		
@@ -311,6 +312,7 @@ def merge_lanes(laneList, out_dir, out_name):
 		
 	mergeLanesTemplate = Template('cat $f > $out')
 	formatted_inputs = ' '.join(laneList) # so that the brackets and quotes don't print
+	print 'parsed serial input', formatted_inputs
 	commandLine = mergeLanesTemplate.substitute(f = formatted_inputs, out = out_name)
 	print commandLine
 	subprocess.call(commandLine, shell=True)
