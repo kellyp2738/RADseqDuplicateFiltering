@@ -312,6 +312,7 @@ def merge_lanes(laneList, out_dir, out_name):
 	mergeLanesTemplate = Template('cat $f > $out')
 	formatted_inputs = ' '.join(laneList) # so that the brackets and quotes don't print
 	commandLine = mergeLanesTemplate.substitute(f = formatted_inputs, out = out_name)
+	print commandLine
 	subprocess.call(commandLine, shell=True)
 
 def parallel_PEAR_assemble(regexR1, regexR2, regexLibrary, in_dir, out_dir, pearPath, out_name = 'pear_merged_', extra_params=None):
