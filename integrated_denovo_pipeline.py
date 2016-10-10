@@ -296,7 +296,7 @@ def parallel_merge_lanes(in_dir, regexLibrary, out_dir, out_suffix = '_qual_filt
 	print lib_set
 	for lib in lib_set:
 		# get the matching file names
-		libID_match = fnmatch.filter(files, '*'+regexLibrary+'*')
+		libID_match = fnmatch.filter(files, '*'+lib+'*')
 		libFiles = []
 		# add the full file path
 		for m in libID_match:
