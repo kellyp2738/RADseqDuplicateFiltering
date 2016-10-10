@@ -314,7 +314,7 @@ def merge_lanes(laneList, out_dir, out_name):
 	if not os.path.exists(out_dir):
 		os.makedirs(out_dir)
 		
-	mergeLanesTemplate = Template('cat $f > $out')
+	mergeLanesTemplate = Template('zcat $f > $out')
 	formatted_inputs = ' '.join(laneList) # so that the brackets and quotes don't print
 	print 'parsed serial input', formatted_inputs
 	commandLine = mergeLanesTemplate.substitute(f = formatted_inputs, out = out_name)
