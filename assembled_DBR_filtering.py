@@ -70,12 +70,12 @@ def parallel_DBR_dict(in_dir, seqType, dbr_start, dbr_stop, test_dict = False, s
         warnings.warn('Expect directory containing only merged Read 1 and Read 2 files; any other files present in %s will be incorporated into DBR directory' % in_dir)
     else:
         raise IOError("Input sequence type specified as %s. Options are 'pear' or 'read2'." % seqType)
-    
+    file_list = os.listdirs(in_dir)
     dbrProcess = [mp.Process(target=DBR_dict, args=(in_dir+in_file, 
                                                     dbr_start,
                                                     dbr_stop,
                                                     test_dict,
-                                                    save)) for in_file in in_dir]
+                                                    save)) for in_file in file_list]
      
     for dP in dbrProcess:
         dP.start()
