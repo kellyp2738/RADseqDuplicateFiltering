@@ -89,26 +89,36 @@ def DBR_dict(in_file, dbr_start, dbr_stop, test_dict = False, save = None):
     if not checkFile(in_file):
         raise IOError("where is the input file: %s" % in_file)
     info('Creating {ID: dbr} dictionary from %s.' % in_file)
-    dbr = {}
-    fq_line = 1
+    #dbr = {}
+    revDBR = {}
+    #fq_line = 1
+    fq_line = 0
     if in_file.endswith('gz'):
         openFxn = gzip.open
     else:
         openFxn = open
     with openFxn(in_file, 'r') as db:
         for line in db:
-            if fq_line == 1:
+            #if fq_line == 1:
+            if fq_line %4 == 0
                 ID = re.split('(\d[:|_]\d+[:|_]\d+[:|_]\d+)', line)[1]
-                fq_line = 2
-            elif fq_line == 2:
+                #fq_line = 2
+                fq_line += 1 #increment 1 line
+            #elif fq_line == 2:
+            elif fq_line %4 == 2
                 seq = list(line) # split the sequence line into a list
                 tag = ''.join(seq[dbr_start:dbr_stop])
-                dbr[ID] = tag
-                fq_line = 3
-            elif fq_line == 3:
-                fq_line = 4
-            elif fq_line == 4:
-                fq_line = 1
+                #dbr[ID] = tag
+                if ID in revDBR.get(tag):
+                    revDBR[tag].add(ID)
+                else:
+                    revDBR[tag] = ID
+                #fq_line = 3
+                fq_line += 3 #increment 3 lines to next set of 4
+            #elif fq_line == 3:
+            #    fq_line = 4
+            #elif fq_line == 4:
+            #    fq_line = 1
     if test_dict:
         print 'Checking DBR dictionary format.'
         x = itertools.islice(dbr.iteritems(), 0, 4)
@@ -122,7 +132,8 @@ def DBR_dict(in_file, dbr_start, dbr_stop, test_dict = False, save = None):
         fq_dbr_out = fq_name + save + '.json'
         print 'Writing dictionary to ' + fq_dbr_out
         with open(fq_dbr_out, 'w') as fp:          
-            json.dump(dbr, fp)
+            #json.dump(dbr, fp)
+            json.dump(revDBR, fp)
 
 def parallel_DBR_count(in_dir, dbr_start, dbr_stop, save = None, saveType = 'json'):
     #if not checkDir(in_dir):
