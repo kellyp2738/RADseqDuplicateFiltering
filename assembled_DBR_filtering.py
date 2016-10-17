@@ -110,6 +110,7 @@ def DBR_dict(in_dir, in_file, dbr_start, dbr_stop, test_dict = False, save = Non
             #elif fq_line == 2:
             elif fq_line %4 == 2:
                 seq = list(line) # split the sequence line into a list
+                print seq
                 tag = ''.join(seq[dbr_start:dbr_stop])
                 #dbr[ID] = tag
                 print tag
