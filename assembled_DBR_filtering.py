@@ -101,18 +101,19 @@ def DBR_dict(in_dir, in_file, dbr_start, dbr_stop, test_dict = False, save = Non
         openFxn = open
     with openFxn(input, 'r') as db:
         for line in db:
-            print fq_line, line
+            #print fq_line, line
             if fq_line %4 == 0:
                 ID = re.split('(\d[:|_]\d+[:|_]\d+[:|_]\d+)', line)[1]
-                print ID
+                #print ID
                 fq_line += 1 #increment 1 line
             elif fq_line %4 == 1:
                 fq_line += 1
                 seq = list(line) # split the sequence line into a list
                 tag = ''.join(seq[dbr_start:dbr_stop])
-                print tag
+                #print tag
                 if tag in revDBR.keys():
                     if ID in revDBR.get(tag):
+                        # each Illumina ID should occur only once; if there are duplicates that indicates a data problem!
                         raise ValueError('Duplicate Illumina ID found at line %s' % fq_line-1)
                     else:
                         revDBR[tag].append(ID) 
@@ -122,6 +123,8 @@ def DBR_dict(in_dir, in_file, dbr_start, dbr_stop, test_dict = False, save = Non
                 fq_line += 1
             elif fq_line %4 == 3:
                 fq_line +=1
+    # this would be useful if building dictionaries with sets, but it is untested
+    # I decided sets weren't the way to go anyway (see above)
     #for key, value in revDBR.items():
     #    revDBR[key] = list(value)
     if test_dict:
