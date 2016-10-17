@@ -123,7 +123,7 @@ def DBR_dict(in_dir, in_file, dbr_start, dbr_stop, test_dict = False, save = Non
             #    fq_line = 1
     if test_dict:
         print 'Checking DBR dictionary format.'
-        x = itertools.islice(dbr.iteritems(), 0, 4)
+        x = itertools.islice(revDBR.iteritems(), 0, 4)
         for key, value in x:
             print key, value
         #print dbr['8:1101:15808:1492'] # this is the first entry in /home/antolinlab/Downloads/CWD_RADseq/pear_merged_Library12_L8.assembled.fastq
