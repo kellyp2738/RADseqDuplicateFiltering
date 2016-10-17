@@ -71,7 +71,8 @@ def parallel_DBR_dict(in_dir, seqType, dbr_start, dbr_stop, test_dict = False, s
     else:
         raise IOError("Input sequence type specified as %s. Options are 'pear' or 'read2'." % seqType)
     file_list = os.listdir(in_dir)
-    dbrProcess = [mp.Process(target=DBR_dict, args=(in_dir+in_file, 
+    dbrProcess = [mp.Process(target=DBR_dict, args=(in_dir,
+                                                    in_file, 
                                                     dbr_start,
                                                     dbr_stop,
                                                     test_dict,
@@ -82,7 +83,7 @@ def parallel_DBR_dict(in_dir, seqType, dbr_start, dbr_stop, test_dict = False, s
     for dP in dbrProcess:
         dP.join()
 
-def DBR_dict(in_file, dbr_start, dbr_stop, test_dict = False, save = None):
+def DBR_dict(in_dir, in_file, dbr_start, dbr_stop, test_dict = False, save = None):
     # DBR is in read 2
     # if merged, it will be the last -2 to -9 (inclusive) bases, starting with base 0 and counting from the end
     # if not merged, it will be bases 2 to 9
@@ -97,7 +98,8 @@ def DBR_dict(in_file, dbr_start, dbr_stop, test_dict = False, save = None):
         openFxn = gzip.open
     else:
         openFxn = open
-    with openFxn(in_file, 'r') as db:
+    input = os.path.join(in_dir, in_file)
+    with openFxn(input, 'r') as db:
         for line in db:
             #if fq_line == 1:
             if fq_line %4 == 0:
@@ -128,7 +130,7 @@ def DBR_dict(in_file, dbr_start, dbr_stop, test_dict = False, save = None):
     if save:
         if not os.path.exists(save):
             os.makedirs(save)
-        fq_name = os.path.splitext(in_file)[1]
+        fq_name = os.path.splitext(in_file)[0]
         fq_dbr_out = os.path.join(save, (fq_name + '.json'))
         print 'Writing dictionary to ' + fq_dbr_out
         with open(fq_dbr_out, 'w') as fp:          
