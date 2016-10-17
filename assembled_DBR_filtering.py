@@ -100,22 +100,25 @@ def DBR_dict(in_dir, in_file, dbr_start, dbr_stop, test_dict = False, save = Non
     else:
         openFxn = open
     with openFxn(input, 'r') as db:
+        # make containers for variables
+        ID = None
+        tag = None
         for line in db:
-            # make containers for variables
-            ID = None
-            tag = None
             if fq_line %4 == 0:
                 ID = re.split('(\d[:|_]\d+[:|_]\d+[:|_]\d+)', line)[1]
+                print ID
                 fq_line += 1 #increment 1 line
             elif fq_line %4 == 1:
                 seq = list(line) # split the sequence line into a list
                 tag = ''.join(seq[dbr_start:dbr_stop])
+                print tag
                 if tag in revDBR.keys():
                     revDBR[tag].add(ID) # this should create a set that avoids having duplicates, but there shouldn't be duplicates anyway so...
                 else:
                     revDBR[tag] = set([ID])
             else:
                 fq_line += 3 #increment 3 lines to next set of 4
+                print fq_line
     if test_dict:
         print 'Checking DBR dictionary format.'
         x = itertools.islice(revDBR.iteritems(), 0, 4)
