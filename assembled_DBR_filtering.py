@@ -128,8 +128,8 @@ def DBR_dict(in_file, dbr_start, dbr_stop, test_dict = False, save = None):
     if save:
         if not os.path.exists(save):
             os.makedirs(save)
-        fq_name = os.path.splitext(in_file)[0]
-        fq_dbr_out = fq_name + save + '.json'
+        fq_name = os.path.splitext(in_file)[1]
+        fq_dbr_out = os.path.join(save, (fq_name + '.json'))
         print 'Writing dictionary to ' + fq_dbr_out
         with open(fq_dbr_out, 'w') as fp:          
             #json.dump(dbr, fp)
