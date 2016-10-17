@@ -100,10 +100,8 @@ def DBR_dict(in_dir, in_file, dbr_start, dbr_stop, test_dict = False, save = Non
     else:
         openFxn = open
     with openFxn(input, 'r') as db:
-        # make containers for variables
-        ID = None
-        tag = None
         for line in db:
+            print fq_line, line
             if fq_line %4 == 0:
                 ID = re.split('(\d[:|_]\d+[:|_]\d+[:|_]\d+)', line)[1]
                 print ID
