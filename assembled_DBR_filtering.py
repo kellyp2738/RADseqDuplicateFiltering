@@ -107,6 +107,7 @@ def DBR_dict(in_dir, in_file, dbr_start, dbr_stop, test_dict = False, save = Non
                 print ID
                 fq_line += 1 #increment 1 line
             elif fq_line %4 == 1:
+                fq_line += 1
                 seq = list(line) # split the sequence line into a list
                 tag = ''.join(seq[dbr_start:dbr_stop])
                 print tag
