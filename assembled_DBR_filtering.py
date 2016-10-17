@@ -104,6 +104,7 @@ def DBR_dict(in_dir, in_file, dbr_start, dbr_stop, test_dict = False, save = Non
             #if fq_line == 1:
             if fq_line %4 == 0:
                 ID = re.split('(\d[:|_]\d+[:|_]\d+[:|_]\d+)', line)[1]
+                print ID
                 #fq_line = 2
                 fq_line += 1 #increment 1 line
             #elif fq_line == 2:
@@ -111,6 +112,7 @@ def DBR_dict(in_dir, in_file, dbr_start, dbr_stop, test_dict = False, save = Non
                 seq = list(line) # split the sequence line into a list
                 tag = ''.join(seq[dbr_start:dbr_stop])
                 #dbr[ID] = tag
+                print tag
                 if ID in revDBR.get(tag):
                     revDBR[tag].add(ID)
                 else:
