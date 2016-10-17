@@ -87,7 +87,8 @@ def DBR_dict(in_dir, in_file, dbr_start, dbr_stop, test_dict = False, save = Non
     # DBR is in read 2
     # if merged, it will be the last -2 to -9 (inclusive) bases, starting with base 0 and counting from the end
     # if not merged, it will be bases 2 to 9
-    if not checkFile(in_file):
+    input = os.path.join(in_dir, in_file)
+    if not checkFile(input):
         raise IOError("where is the input file: %s" % in_file)
     info('Creating {ID: dbr} dictionary from %s.' % in_file)
     #dbr = {}
@@ -98,7 +99,6 @@ def DBR_dict(in_dir, in_file, dbr_start, dbr_stop, test_dict = False, save = Non
         openFxn = gzip.open
     else:
         openFxn = open
-    input = os.path.join(in_dir, in_file)
     with openFxn(input, 'r') as db:
         for line in db:
             #if fq_line == 1:
