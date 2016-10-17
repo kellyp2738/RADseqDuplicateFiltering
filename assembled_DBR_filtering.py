@@ -110,8 +110,8 @@ def DBR_dict(in_dir, in_file, dbr_start, dbr_stop, test_dict = False, save = Non
             elif fq_line %4 == 1:
                 seq = list(line) # split the sequence line into a list
                 tag = ''.join(seq[dbr_start:dbr_stop])
-                if ID in revDBR.get(tag):
-                    revDBR[tag].add(ID)
+                if tag in revDBR.keys():
+                    revDBR[tag].add(ID) # this should create a set that avoids having duplicates, but there shouldn't be duplicates anyway so...
                 else:
                     revDBR[tag] = ID
             else:
