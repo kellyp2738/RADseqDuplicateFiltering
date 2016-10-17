@@ -100,7 +100,7 @@ def DBR_dict(in_file, dbr_start, dbr_stop, test_dict = False, save = None):
     with openFxn(in_file, 'r') as db:
         for line in db:
             #if fq_line == 1:
-            if fq_line %4 == 0
+            if fq_line %4 == 0:
                 ID = re.split('(\d[:|_]\d+[:|_]\d+[:|_]\d+)', line)[1]
                 #fq_line = 2
                 fq_line += 1 #increment 1 line
