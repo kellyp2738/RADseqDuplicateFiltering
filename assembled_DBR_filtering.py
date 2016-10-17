@@ -101,30 +101,21 @@ def DBR_dict(in_dir, in_file, dbr_start, dbr_stop, test_dict = False, save = Non
         openFxn = open
     with openFxn(input, 'r') as db:
         for line in db:
-            #if fq_line == 1:
+            # make containers for variables
+            ID = None
+            tag = None
             if fq_line %4 == 0:
                 ID = re.split('(\d[:|_]\d+[:|_]\d+[:|_]\d+)', line)[1]
-                print ID
-                #fq_line = 2
                 fq_line += 1 #increment 1 line
-            #elif fq_line == 2:
             elif fq_line %4 == 1:
                 seq = list(line) # split the sequence line into a list
-                print seq
                 tag = ''.join(seq[dbr_start:dbr_stop])
-                #dbr[ID] = tag
-                print tag
                 if ID in revDBR.get(tag):
                     revDBR[tag].add(ID)
                 else:
                     revDBR[tag] = ID
-                #fq_line = 3
             else:
                 fq_line += 3 #increment 3 lines to next set of 4
-            #elif fq_line == 3:
-            #    fq_line = 4
-            #elif fq_line == 4:
-            #    fq_line = 1
     if test_dict:
         print 'Checking DBR dictionary format.'
         x = itertools.islice(revDBR.iteritems(), 0, 4)
