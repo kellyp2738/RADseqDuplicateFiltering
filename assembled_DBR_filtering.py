@@ -112,13 +112,18 @@ def DBR_dict(in_dir, in_file, dbr_start, dbr_stop, test_dict = False, save = Non
                 tag = ''.join(seq[dbr_start:dbr_stop])
                 print tag
                 if tag in revDBR.keys():
-                    revDBR[tag].add(ID) # this should create a set that avoids having duplicates, but there shouldn't be duplicates anyway so...
+                    if ID in revDBR.get(tag):
+                        raise ValueError('Duplicate Illumina ID found at line %s' % fq_line-1)
+                    else:
+                        revDBR[tag].append(ID) 
                 else:
-                    revDBR[tag] = set([ID])
+                    revDBR[tag] = [ID]
             elif fq_line %4 == 2:
                 fq_line += 1
             elif fq_line %4 == 3:
                 fq_line +=1
+    #for key, value in revDBR.items():
+    #    revDBR[key] = list(value)
     if test_dict:
         print 'Checking DBR dictionary format.'
         x = itertools.islice(revDBR.iteritems(), 0, 4)
