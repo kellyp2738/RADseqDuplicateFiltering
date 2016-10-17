@@ -108,7 +108,7 @@ def DBR_dict(in_dir, in_file, dbr_start, dbr_stop, test_dict = False, save = Non
                 #fq_line = 2
                 fq_line += 1 #increment 1 line
             #elif fq_line == 2:
-            elif fq_line %4 == 2:
+            elif fq_line %4 == 1:
                 seq = list(line) # split the sequence line into a list
                 print seq
                 tag = ''.join(seq[dbr_start:dbr_stop])
@@ -119,6 +119,7 @@ def DBR_dict(in_dir, in_file, dbr_start, dbr_stop, test_dict = False, save = Non
                 else:
                     revDBR[tag] = ID
                 #fq_line = 3
+            else:
                 fq_line += 3 #increment 3 lines to next set of 4
             #elif fq_line == 3:
             #    fq_line = 4
