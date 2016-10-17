@@ -114,7 +114,10 @@ def DBR_dict(in_dir, in_file, dbr_start, dbr_stop, test_dict = False, save = Non
                     revDBR[tag].add(ID) # this should create a set that avoids having duplicates, but there shouldn't be duplicates anyway so...
                 else:
                     revDBR[tag] = set([ID])
-                fq_line += 3
+            elif fq_line %4 == 2:
+                fq_line += 1
+            elif fq_line %4 == 3:
+                fq_line +=1
     if test_dict:
         print 'Checking DBR dictionary format.'
         x = itertools.islice(revDBR.iteritems(), 0, 4)
