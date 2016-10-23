@@ -92,7 +92,8 @@ def DBR_dict(in_dir, in_file, dbr_start, dbr_stop, test_dict = False, save = Non
         raise IOError("where is the input file: %s" % in_file)
     info('Creating {ID: dbr} dictionary from %s.' % in_file)
     #dbr = {}
-    revDBR = {}
+    #revDBR = {}
+    revDBR = defaultdict(list)
     #fq_line = 1
     fq_line = 0
     if in_file.endswith('gz'):
@@ -111,12 +112,16 @@ def DBR_dict(in_dir, in_file, dbr_start, dbr_stop, test_dict = False, save = Non
                 seq = list(line) # split the sequence line into a list
                 tag = ''.join(seq[dbr_start:dbr_stop])
                 #print tag
-                if tag in revDBR.keys():
-                    if ID in revDBR.get(tag):
-                        # each Illumina ID should occur only once; if there are duplicates that indicates a data problem!
-                        raise ValueError('Duplicate Illumina ID found at line %s' % fq_line-1)
-                    else:
-                        revDBR[tag].append(ID) 
+                if ID not in revDBR[tag]:
+                    revDBR[tag].append(ID)
+                else:
+                    raise ValueError('Duplicate Illumina ID found at line %s' % fq_line-1)
+                #if tag in revDBR.keys():
+                #    if ID in revDBR.get(tag):
+                #        # each Illumina ID should occur only once; if there are duplicates that indicates a data problem!
+                #        raise ValueError('Duplicate Illumina ID found at line %s' % fq_line-1)
+                #    else:
+                #        revDBR[tag].append(ID) 
                 else:
                     revDBR[tag] = [ID]
             elif fq_line %4 == 2:
