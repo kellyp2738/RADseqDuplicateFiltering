@@ -585,6 +585,7 @@ def iterative_Demultiplex2(in_dir, # directory of un-demultiplexed libraries
         sampleID_match = re.match(regex_compiled, f)
         
         if sampleID_match: # if we get a match
+            print 'match!'
             sampleID = sampleID_match.groups()[0] # extract that match
             bcs = os.listdir(in_dir)
             out_name = out_prefix + sampleID + '_'
@@ -595,7 +596,8 @@ def iterative_Demultiplex2(in_dir, # directory of un-demultiplexed libraries
                     #Demultiplex(in_f, barcode_file, out_dir, out_name)
                     
                     demultiplexProcess.append(mp.Process(target=Demultiplex, args=(in_f, barcode_file, out_dir, demultiplexPath, out_prefix)))
-                    
+        else:
+            print 'no match :('            
     for dP in demultiplexProcess:
         dP.start()
     for dP in demultiplexProcess:
