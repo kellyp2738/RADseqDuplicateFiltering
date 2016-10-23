@@ -560,10 +560,12 @@ def iterative_Demultiplex2(in_dir, # directory of un-demultiplexed libraries
     #pdb.set_trace()
     
     if startPoint == 'barcodes':
-        files = os.listdir(barcode_dir)
+        files1 = os.listdir(barcode_dir)
+        files2 = os.listdir(in_dir)
         
     elif startPoint == 'libraries':
-        files = os.listdir(in_dir)
+        files1 = os.listdir(in_dir)
+        files2 = os.listdir(barcode_dir)
         
     else:
         print 'ERROR: Starting point for demultiplexing file search not specified.' 
@@ -571,33 +573,32 @@ def iterative_Demultiplex2(in_dir, # directory of un-demultiplexed libraries
     
     demultiplexProcess = []
     
-    for f in files:
+    for f1 in files1:
         # for libraries with format 'Library#' in name (only numbers to distinguish library)
-        #sampleID_match = re.match(".*(Library\d{2,3}).*", f)
+        #sampleID_match = re.match(".*(Library\d{2,3}).*", f1)
         
         # for libraries with formats 'Library#' or 'Library#A' in name (letters and numbers to distinguish library)
         # this should also work for libraries with only numbers: '\w?' should capture 0 or more words after the digits
         
-        #sampleID_match = re.match(".*(Library\d{1,3}\w?).*", f)
-        #sampleID_match = re.match(".*(Library\d{1,3}[A|B]?).*", f)
+        #sampleID_match = re.match(".*(Library\d{1,3}\w?).*", f1)
+        #sampleID_match = re.match(".*(Library\d{1,3}[A|B]?).*", f1)
         
         regex_compiled = re.compile(r".*("+regexLibrary+").*")
-        sampleID_match = re.match(regex_compiled, f)
+        ID_match = re.match(regex_compiled, f1)
         
-        if sampleID_match: # if we get a match
-            print 'match!'
-            sampleID = sampleID_match.groups()[0] # extract that match
-            bcs = os.listdir(in_dir)
-            out_name = out_prefix + sampleID + '_'
-            for b in bcs:
-                if sampleID in b:
-                    barcode_file = os.path.join(barcode_dir, b)
-                    in_f = os.path.join(in_dir, f)
-                    #Demultiplex(in_f, barcode_file, out_dir, out_name)
-                    
-                    demultiplexProcess.append(mp.Process(target=Demultiplex, args=(in_f, barcode_file, out_dir, demultiplexPath, out_prefix)))
-        else:
-            print 'no match :('            
+        if ID_match: # if we get a match
+            ID = sampleID_match.groups()[0] # extract that match
+            out_name = out_prefix + ID + '_'
+            for f2 in files2:
+                if ID in f2:
+                    if startPoint == 'barcodes':
+                        sequence_file = os.path.join(in_dir, f2)
+                        barcode_file = os.path.join(barcode_dir, f1)
+                    elif startPoint == 'libraries':
+                        sequence_file = os.path.join(in_dir, f1)
+                        barcode_file = os.path.join(barcode_dir, f2)
+                        #Demultiplex(in_f, barcode_file, out_dir, out_name)
+                    demultiplexProcess.append(mp.Process(target=Demultiplex, args=(sequence_file, barcode_file, out_dir, demultiplexPath, out_prefix)))
     for dP in demultiplexProcess:
         dP.start()
     for dP in demultiplexProcess:
