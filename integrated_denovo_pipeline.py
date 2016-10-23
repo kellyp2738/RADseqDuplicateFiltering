@@ -587,7 +587,7 @@ def iterative_Demultiplex2(in_dir, # directory of un-demultiplexed libraries
         ID_match = re.match(regex_compiled, f1)
         
         if ID_match: # if we get a match
-            ID = sampleID_match.groups()[0] # extract that match
+            ID = ID_match.groups()[0] # extract that match
             out_name = out_prefix + ID + '_'
             for f2 in files2:
                 if ID in f2:
