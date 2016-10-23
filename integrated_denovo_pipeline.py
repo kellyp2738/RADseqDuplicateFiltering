@@ -285,6 +285,7 @@ def concatenate(read1, read2, out_name):
                         outf.write(finalConcat+'\n')
                         fq_line += 1
 
+## not properly working
 def parallel_merge_lanes(in_dir, regexLibrary, out_dir, out_suffix = '_qual_filtered_fully_concatenated.fq.gz'):
 	files = os.listdir(in_dir)
 	lib_set = set([])
@@ -310,6 +311,7 @@ def parallel_merge_lanes(in_dir, regexLibrary, out_dir, out_suffix = '_qual_filt
 	for mlP in mergeLaneProcess:
 		mlP.join()
 
+# not properly working
 def merge_lanes(laneList, out_dir, out_name):
 	if not os.path.exists(out_dir):
 		os.makedirs(out_dir)
@@ -550,8 +552,7 @@ def iterative_Demultiplex2(in_dir, # directory of un-demultiplexed libraries
                           out_dir, # full path for outputs 
                           regexLibrary,
                           demultiplexPath,
-                          startPoint,
-                          out_prefix = 'demultiplexed_'): # text string to add to file names
+                          startPoint):
 
     #if not checkDir(in_dir):
     #    raise IOError("Input is not a directory: %s" % in_dir)
@@ -588,17 +589,20 @@ def iterative_Demultiplex2(in_dir, # directory of un-demultiplexed libraries
         
         if ID_match: # if we get a match
             ID = ID_match.groups()[0] # extract that match
-            out_name = out_prefix + ID + '_'
             for f2 in files2:
                 if ID in f2:
                     if startPoint == 'barcodes':
                         sequence_file = os.path.join(in_dir, f2)
                         barcode_file = os.path.join(barcode_dir, f1)
+                        suffix = os.path.splitext(f1)[0]
+                        out_prefix = 'demultiplexed_' + ID + '_' + suffix
+                        demultiplexProcess.append(mp.Process(target=Demultiplex, args=(sequence_file, barcode_file, out_dir, demultiplexPath, out_prefix)))
                     elif startPoint == 'libraries':
                         sequence_file = os.path.join(in_dir, f1)
                         barcode_file = os.path.join(barcode_dir, f2)
-                        #Demultiplex(in_f, barcode_file, out_dir, out_name)
-                    demultiplexProcess.append(mp.Process(target=Demultiplex, args=(sequence_file, barcode_file, out_dir, demultiplexPath, out_prefix)))
+                        suffix = os.path.splitext(f2)[0]
+                        out_prefix = 'demultiplexed_' + ID + '_' + suffix
+                        demultiplexProcess.append(mp.Process(target=Demultiplex, args=(sequence_file, barcode_file, out_dir, demultiplexPath, out_prefix)))
     for dP in demultiplexProcess:
         dP.start()
     for dP in demultiplexProcess:
