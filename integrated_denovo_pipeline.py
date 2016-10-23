@@ -562,7 +562,7 @@ def iterative_Demultiplex2(in_dir, # directory of un-demultiplexed libraries
     if startPoint == 'barcodes':
         files = os.listdir(barcode_dir)
         
-    if startPoint == 'libraries':
+    elif startPoint == 'libraries':
         files = os.listdir(in_dir)
         
     else:
