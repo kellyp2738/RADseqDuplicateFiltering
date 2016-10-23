@@ -122,8 +122,8 @@ def DBR_dict(in_dir, in_file, dbr_start, dbr_stop, test_dict = False, save = Non
                 #        raise ValueError('Duplicate Illumina ID found at line %s' % fq_line-1)
                 #    else:
                 #        revDBR[tag].append(ID) 
-                else:
-                    revDBR[tag] = [ID]
+                #else:
+                #    revDBR[tag] = [ID]
             elif fq_line %4 == 2:
                 fq_line += 1
             elif fq_line %4 == 3:
