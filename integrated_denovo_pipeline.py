@@ -580,7 +580,9 @@ def iterative_Demultiplex2(in_dir, # directory of un-demultiplexed libraries
         
         #sampleID_match = re.match(".*(Library\d{1,3}\w?).*", f)
         #sampleID_match = re.match(".*(Library\d{1,3}[A|B]?).*", f)
-        sampleID_match = re.match(".*("+regexLibrary+").*", f)
+        
+        regex_compiled = re.compile(r".*("+regexLibrary+").*")
+        sampleID_match = re.match(regex_compiled, f)
         
         if sampleID_match: # if we get a match
             sampleID = sampleID_match.groups()[0] # extract that match
