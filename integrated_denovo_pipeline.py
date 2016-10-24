@@ -457,7 +457,7 @@ def parallel_Trim(in_dir, out_dir, trimPath, first_base, last_base=None, suffix 
         os.makedirs(out_dir)
     
     trimProcess = []
-        
+    uniformLengthTemplate = Template('%s -f $f -l $l -i $input -o $output' % trimPath)    
     for i in os.listdir(in_dir):
         # save file as out_file
         out_name = i + suffix
@@ -466,16 +466,19 @@ def parallel_Trim(in_dir, out_dir, trimPath, first_base, last_base=None, suffix 
         in_file=os.path.join(in_dir, i)
         out_file=os.path.join(out_dir, out_name)
         
-        trimProcess.append(mp.Process(target=Trim, args=(in_file, out_file, first_base, last_base, trimPath, execute)))
+        trim_call = uniformLengthTemplate.substitute(f = str(first_base), l = str(last_base), input = in_file, output = out_file)
+        print trim_call
+        
+        #trimProcess.append(mp.Process(target=Trim, args=(in_file, out_file, first_base, last_base, trimPath, execute)))
         #commandline = Trim(in_file, out_file, trimPath, first_base, last_base, execute)
         #processQueue.put(Work(commandline = commandline, shell = True), True, 360)
     
     #processQueue.join()
     
-    for tP in trimProcess:
-        tP.start()
-    for tP in trimProcess:
-        tP.join()
+    #for tP in trimProcess:
+    #    tP.start()
+    #for tP in trimProcess:
+    #    tP.join()
 
 def Trim(in_file, out_file, first_base, trimPath, last_base=None, execute=True):    
     
