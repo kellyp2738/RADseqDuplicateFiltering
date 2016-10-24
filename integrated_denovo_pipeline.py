@@ -450,7 +450,7 @@ def FASTQ_quality_filter(in_file, out_file, q, p, qualityFilter):
 
 ## TRIM R2 END OF MERGED SEQUENCE BEFORE DEMULTIPLEXING TO ENFORCE UNIFORM READ LENGTH?
 
-def parallel_Trim(in_dir, out_dir, trimPath, first_base, last_base=None, suffix = '_trimmed.fq'):
+def parallel_Trim(in_dir, out_dir, trimPath, first_base, last_base=None, suffix = '_trimmed.fq', execute=True):
     
     # new directory for trimmed files
     if not os.path.exists(out_dir):
@@ -467,7 +467,7 @@ def parallel_Trim(in_dir, out_dir, trimPath, first_base, last_base=None, suffix 
         out_file=os.path.join(out_dir, out_name)
         
         #trimProcess.append(mp.Process(target=Trim, args=(in_file, out_file, first_base, last_base, trimPath)))
-        commandline = Trim(in_file, out_file, trimPath, first_base, last_base)
+        commandline = Trim(in_file, out_file, trimPath, first_base, last_base, execute)
         processQueue.put(Work(commandline = commandline, shell = True), True, 360)
     
     processQueue.join()
