@@ -466,8 +466,8 @@ def parallel_Trim(in_dir, out_dir, trimPath, first_base, last_base=None, suffix 
         in_file=os.path.join(in_dir, i)
         out_file=os.path.join(out_dir, out_name)
         
-        trim_call = uniformLengthTemplate.substitute(f = str(first_base), l = str(last_base), input = in_file, output = out_file)
-        print trim_call
+        #trim_call = uniformLengthTemplate.substitute(f = str(first_base), l = str(last_base), input = in_file, output = out_file)
+        #print trim_call
         
         trimProcess.append(mp.Process(target=Trim, args=(in_file, out_file, first_base, last_base, trimPath, execute)))
         #commandline = Trim(in_file, out_file, trimPath, first_base, last_base, execute)
@@ -490,6 +490,7 @@ def Trim(in_file, out_file, first_base, trimPath, last_base=None, execute=True):
     # Remove barcodes and R1 enzyme cut site
     if last_base:
         trim_call = uniformLengthTemplate.substitute(f = str(first_base), l = str(last_base), input = in_file, output = out_file)
+        print trim_call
         #trim_call = "fastx_trimmer -f " + str(first_base) + ' -l ' + str(last_base) + " -i " + full_path + " -o " + new_path
         if execute:
             subprocess.call(trim_call, shell=True)
