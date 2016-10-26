@@ -639,13 +639,14 @@ def Demultiplex(in_file, barcode_file, out_dir, demultiplexPath, out_prefix = 'd
         demultiplexProcess = Popen(commandLine, shell = True, stdin = catProcess.stdout)
     demultiplexProcess.wait()
 
-def denovo_Ustacks(in_dir, denovo_path, stacks_executables, out_dir, m, n, b, D):    
+def denovo_Ustacks(in_dir, denovo_path, stacks_executables, out_dir, m, n, b, D, unmatchedName, execute=True):    
     print 'Assembling sequences de novo using ustacks\n'
     
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
+    completed_outFiles = os.listdir(out_dir) # check to see which (if any) outputs are already present
     
-    #rm_unmatched = False
+    rm_unmatched = False
     
     ustacks_path = stacks_executables + '/ustacks'
     print ustacks_path
@@ -660,9 +661,11 @@ def denovo_Ustacks(in_dir, denovo_path, stacks_executables, out_dir, m, n, b, D)
         # don't proceed if the inputs don't have the proper extension
         assert '.fq' in i, "%s needs extension .fq for Stacks compatibility" % i
 
-        if 'unmatched' in i: # don't process the unmatched sequences
+        if unmatchedName in i: # don't process the unmatched sequences
             print 'Skipping sequences with unmatched barcodes.\n'
             rm_unmatched = True
+        elif fnmatch.filter(completed_outFiles, os.path.splitext(i)[0]+'*'): # is there an output already?:
+            print 'Skipping sequences already processed with ustacks: ', i
         else:
             
             # full path to trimmed file
