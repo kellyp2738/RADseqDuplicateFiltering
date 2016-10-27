@@ -831,6 +831,7 @@ def callGeno(sam_in, pseudoref, BCFout, VCFout, samtoolsPath, bcftoolsPath):
         samPath = sam_in + '/' + sam
         bam = sam_in + '/' + fname + '.bam' # for bam output
         sorted_sam = sam_in + '/' + fname + '.sorted' # for sorting output
+        sorted_sam2 = sorted_sam + '.bam' # because samtools auto-adds the extension :(
         
         view_cmd = samtoolsView.substitute(output = bam, input = samPath)
         print view_cmd
@@ -840,7 +841,7 @@ def callGeno(sam_in, pseudoref, BCFout, VCFout, samtoolsPath, bcftoolsPath):
         print sort_cmd
         subprocess.call(sort_cmd, shell=True)
         
-        index_cmd = samtoolsIndex.substitute(input = sorted_sam)
+        index_cmd = samtoolsIndex.substitute(input = sorted_sam2)
         print index_cmd
         subprocess.call(index_cmd, shell=True)
     
