@@ -833,12 +833,15 @@ def callGeno(sam_in, pseudoref, BCFout, VCFout, samtoolsPath, bcftoolsPath):
         sorted_sam = sam_in + '/' + fname + '.sorted.bam' # for sorting output
         
         view_cmd = samtoolsView.substitute(output = bam, input = samPath)
+        print view_cmd
         subprocess.call(view_cmd, shell=True)
         
         sort_cmd = samtoolsSort.substitute(output = sorted_sam, input = bam)
+        print sort_cmd
         subprocess.call(sort_cmd, shell=True)
         
         index_cmd = samtoolsIndex.substitute(input = sorted_sam)
+        print index_cmd
         subprocess.call(index_cmd, shell=True)
     
     # take the sorted, indexed bam files and perform the genotype calling with mpileup
