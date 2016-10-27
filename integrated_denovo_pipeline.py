@@ -818,7 +818,7 @@ def callGeno(sam_in, pseudoref, BCFout, VCFout, samtoolsPath, bcftoolsPath):
     print 'Processing sam files into sorted bam files.'
     
     samtoolsView = Template('%s view -F 4 -b -S -o $output $input' % samtoolsPath)
-    samtoolsSort = Template('%s sort $input $output ' % samtoolsPath)
+    samtoolsSort = Template('%s sort -o $output $input' % samtoolsPath)
     samtoolsIndex = Template('%s index $input' % samtoolsPath)
     samtoolsMpileup = Template('%s mpileup -t DP -C50 -u -I -f $reference -o $bcf_out $input' % samtoolsPath)
     bcftoolsView = Template('%s call -v -m $input > $output' % bcftoolsPath)
@@ -830,8 +830,7 @@ def callGeno(sam_in, pseudoref, BCFout, VCFout, samtoolsPath, bcftoolsPath):
         
         samPath = sam_in + '/' + sam
         bam = sam_in + '/' + fname + '.bam' # for bam output
-        sorted_sam = sam_in + '/' + fname + '.sorted' # for sorting output
-        sorted_sam2 = sorted_sam + '.bam' # because samtools auto-adds the extension :(
+        sorted_sam = sam_in + '/' + fname + '.sorted.bam' # for sorting output
         
         view_cmd = samtoolsView.substitute(output = bam, input = samPath)
         print view_cmd
@@ -841,7 +840,7 @@ def callGeno(sam_in, pseudoref, BCFout, VCFout, samtoolsPath, bcftoolsPath):
         print sort_cmd
         subprocess.call(sort_cmd, shell=True)
         
-        index_cmd = samtoolsIndex.substitute(input = sorted_sam2)
+        index_cmd = samtoolsIndex.substitute(input = sorted_sam)
         print index_cmd
         subprocess.call(index_cmd, shell=True)
     
