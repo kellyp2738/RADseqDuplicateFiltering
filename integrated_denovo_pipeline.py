@@ -830,7 +830,7 @@ def callGeno(sam_in, pseudoref, BCFout, VCFout, samtoolsPath, bcftoolsPath):
         
         samPath = sam_in + '/' + sam
         bam = sam_in + '/' + fname + '.bam' # for bam output
-        sorted_sam = sam_in + '/' + fname + '.sorted.bam' # for sorting output
+        sorted_sam = sam_in + '/' + fname + '.sorted' # for sorting output
         
         view_cmd = samtoolsView.substitute(output = bam, input = samPath)
         print view_cmd
