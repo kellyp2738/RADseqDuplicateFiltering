@@ -811,14 +811,16 @@ def refmap_BWA(in_file, fname, out_file, BWA_path, pseudoref_full_path, execute=
     else:
         return bwa_mem_call
 
-def callGeno(sam_in, pseudoref, BCFout, VCFout, samtoolsPath, bcftoolsPath):
+def callGeno(sam_in, pseudoref, BCFout, VCFout, samtoolsPath, bcftoolsPath, threads):
     #print sam_in, pseudoref, BCFout, VCFout
     # set up the individual files for transfer from sam to bam and bam indexing
     
+    threads = multiprocessing.cpu_count()
+    
     print 'Processing sam files into sorted bam files.'
     
-    samtoolsView = Template('%s view -F 4 -b -S -o $output $input' % samtoolsPath)
-    samtoolsSort = Template('%s sort -o $output $input' % samtoolsPath)
+    samtoolsView = Template('%s view -F 4 -b -S -@ $threads-o $output $input' % samtoolsPath)
+    samtoolsSort = Template('%s sort -@ $threads-o $output $input' % samtoolsPath)
     samtoolsIndex = Template('%s index $input' % samtoolsPath)
     samtoolsMpileup = Template('%s mpileup -t DP -C50 -u -I -f $reference -o $bcf_out $input' % samtoolsPath)
     bcftoolsView = Template('%s call -v -m $input > $output' % bcftoolsPath)
@@ -832,11 +834,11 @@ def callGeno(sam_in, pseudoref, BCFout, VCFout, samtoolsPath, bcftoolsPath):
         bam = sam_in + '/' + fname + '.bam' # for bam output
         sorted_sam = sam_in + '/' + fname + '.sorted.bam' # for sorting output
         
-        view_cmd = samtoolsView.substitute(output = bam, input = samPath)
+        view_cmd = samtoolsView.substitute(threads = threads, output = bam, input = samPath)
         print view_cmd
         subprocess.call(view_cmd, shell=True)
         
-        sort_cmd = samtoolsSort.substitute(output = sorted_sam, input = bam)
+        sort_cmd = samtoolsSort.substitute(threads = threads, output = sorted_sam, input = bam)
         print sort_cmd
         subprocess.call(sort_cmd, shell=True)
         
