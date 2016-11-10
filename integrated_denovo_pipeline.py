@@ -819,7 +819,7 @@ def callGeno(sam_in, pseudoref, BCFout, VCFout, samtoolsPath, bcftoolsPath, thre
     
     print 'Processing sam files into sorted bam files.'
     
-    samtoolsView = Template('%s view -F 4 -b -S -@ $threads-o $output $input' % samtoolsPath)
+    samtoolsView = Template('%s view -F 4 -b -S -@ $threads -o $output $input' % samtoolsPath)
     samtoolsSort = Template('%s sort -@ $threads -o $output $input' % samtoolsPath)
     samtoolsIndex = Template('%s index $input' % samtoolsPath)
     samtoolsMpileup = Template('%s mpileup -t DP -C50 -u -I -f $reference -o $bcf_out $input' % samtoolsPath)
