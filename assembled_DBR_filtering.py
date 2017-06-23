@@ -83,7 +83,49 @@ def parallel_DBR_dict(in_dir, seqType, dbr_start, dbr_stop, test_dict = False, s
     for dP in dbrProcess:
         dP.join()
 
-def DBR_dict(in_dir, in_file, dbr_start, dbr_stop, test_dict = False, save = None):
+def DBR_dict(in_file, dbr_start, dbr_stop, test_dict = False, save = None):
+    # DBR is in read 2
+    # if merged, it will be the last -2 to -9 (inclusive) bases, starting with base 0 and counting from the end
+    # if not merged, it will be bases 2 to 9
+    if not checkFile(in_file):
+        raise IOError("where is the input file: %s" % in_file)
+    info('Creating {ID: dbr} dictionary from %s.' % in_file)
+    dbr = {}
+    fq_line = 1
+    if in_file.endswith('gz'):
+        openFxn = gzip.open
+    else:
+        openFxn = open
+    with openFxn(in_file, 'r') as db:
+        for line in db:
+            if fq_line == 1:
+                ID = re.split('(\d[:|_]\d+[:|_]\d+[:|_]\d+)', line)[1]
+                fq_line = 2
+            elif fq_line == 2:
+                seq = list(line) # split the sequence line into a list
+                tag = ''.join(seq[dbr_start:dbr_stop])
+                dbr[ID] = tag
+                fq_line = 3
+            elif fq_line == 3:
+                fq_line = 4
+            elif fq_line == 4:
+                fq_line = 1
+    if test_dict:
+        print 'Checking DBR dictionary format.'
+        x = itertools.islice(dbr.iteritems(), 0, 4)
+        for key, value in x:
+            print key, value
+        #print dbr['8:1101:15808:1492'] # this is the first entry in /home/antolinlab/Downloads/CWD_RADseq/pear_merged_Library12_L8.assembled.fastq
+    if save:
+        if not os.path.exists(save):
+            os.makedirs(save)
+        fq_name = os.path.splitext(in_file)[0]
+        fq_dbr_out = fq_name + save + '.json'
+        print 'Writing dictionary to ' + fq_dbr_out
+        with open(fq_dbr_out, 'w') as fp:          
+            json.dump(dbr, fp)
+
+def rev_DBR_dict(in_dir, in_file, dbr_start, dbr_stop, test_dict = False, save = None):
     # DBR is in read 2
     # if merged, it will be the last -2 to -9 (inclusive) bases, starting with base 0 and counting from the end
     # if not merged, it will be bases 2 to 9
@@ -396,6 +438,7 @@ def DBR_Filter(assembled_dir, # the SAM files for the data mapped to pseudorefer
                                         SEQ = fields[9] # the actual sequence
                                         QUAL = fields[10] # sequence quality score
                                         
+                                        # TODO: move this to after line 415 (if FLAG == '0':) so we only do the look-up if it's a primary read
                                         # extract the DBR corresponding to the QNAME for each row
                                         dbr_value = dbr.get(QNAME) 
                                         
