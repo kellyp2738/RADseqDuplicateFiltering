@@ -83,20 +83,21 @@ def parallel_DBR_dict(in_dir, seqType, dbr_start, dbr_stop, test_dict = False, s
     for dP in dbrProcess:
         dP.join()
 
-def DBR_dict(in_file, dbr_start, dbr_stop, test_dict = False, save = None):
+def DBR_dict(in_dir, in_file, dbr_start, dbr_stop, test_dict = False, save = None):
     # DBR is in read 2
     # if merged, it will be the last -2 to -9 (inclusive) bases, starting with base 0 and counting from the end
     # if not merged, it will be bases 2 to 9
-    if not checkFile(in_file):
+    input = os.path.join(in_dir, in_file)
+    if not checkFile(input):
         raise IOError("where is the input file: %s" % in_file)
-    info('Creating {ID: dbr} dictionary from %s.' % in_file)
+    info('Creating {dbr: ID} dictionary from %s.' % in_file)
     dbr = {}
     fq_line = 1
     if in_file.endswith('gz'):
         openFxn = gzip.open
     else:
         openFxn = open
-    with openFxn(in_file, 'r') as db:
+    with openFxn(input, 'r') as db:
         for line in db:
             if fq_line == 1:
                 ID = re.split('(\d[:|_]\d+[:|_]\d+[:|_]\d+)', line)[1]
@@ -189,7 +190,7 @@ def rev_DBR_dict(in_dir, in_file, dbr_start, dbr_stop, test_dict = False, save =
         with open(fq_dbr_out, 'w') as fp:          
             #json.dump(dbr, fp)
             json.dump(revDBR, fp)
-
+'''
 def parallel_DBR_count(in_dir, dbr_start, dbr_stop, save = None, saveType = 'json'):
     #if not checkDir(in_dir):
     #    raise IOError("Input is not a directory: %s" % in_dir)
@@ -248,7 +249,7 @@ def DBR_count(in_file, dbr_start, dbr_stop, save = None, saveType = None):
             with open(fq_dbr_out, 'w') as fp:
                 for key, value in dbr.items():
                     fp.write(key + ',' + str(value) + '\n')
-
+'''
 phred_dict = {'"':1.0,"#":2.0,"$":3.0,"%":4.0,"&":5.0,"'":6.0,"(":7.0,")":8.0,"*":9.0,"+":10.0,
               ",":11.0,"-":12.0,".":13.0,"/":14.0,"0":15.0,"1":16,"2":17.0,"3":18.0,"4":19.0,"5":20.0,
               "6":21.0,"7":22.0,"8":23.0,"9":24.0,":":25.0,";":26,"<":27.0,"+":28.0,">":29.0,"?":30.0,
