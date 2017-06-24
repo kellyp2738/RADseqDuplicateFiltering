@@ -365,10 +365,12 @@ def DBR_Filter(assembled_dir, # the SAM files for the data mapped to pseudorefer
             sampleID = find_SampleID(i, sample_regex) # find the sample ID, potentially with some extra characters to distinguish from library ID
             
             # extract the library ID with a regex
-            libraryID = find_LibraryID(i)
+            #libraryID = find_LibraryID(i)
+            libraryID = sampleID #this is just a regex; now sample ID is all we need
             
             # use the library ID to find the right barcode file
-            bcf = find_BarcodeFile(libraryID, barcode_dir)
+            #bcf = find_BarcodeFile(libraryID, barcode_dir)
+            bcf = True # dummy set to true for compatibility w/earlier version
             
             # use the library ID to find the right DBR dictionary
             dict_in = find_DBRdictionary(libraryID, dict_dir)
@@ -383,7 +385,8 @@ def DBR_Filter(assembled_dir, # the SAM files for the data mapped to pseudorefer
                 if not os.path.exists(out_dir):
                     os.makedirs(out_dir)
             
-                out_seqs_final = out_dir + '/DBR_filtered_sequences_' + libraryID + '_' + sampleID + '.fastq'
+                #out_seqs_final = out_dir + '/DBR_filtered_sequences_' + libraryID + '_' + sampleID + '.fastq'
+                out_seqs_final = out_dir + '/DBR_filtered_sequences_' + sampleID + '.fastq'
             
                 #os.path.isfile(fname)
     
