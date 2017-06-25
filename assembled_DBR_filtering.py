@@ -336,7 +336,6 @@ def parallel_DBR_filter(assembled_dir, # the SAM files for the data mapped to ps
                barcode_dir, # the barcodes for individuals in the library referenced in dict_in
                dict_dir, # a single dictionary of DBRs (for one library only)
                sample_regex, # regular expression to find the sample ID
-               barcode_file=None, # if just a single library is being used, can directly pass the barcode file
                test_dict=True, # optionally print testing info to stdout for checking the dictionary construction
                phred_dict=phred_dict, # dictionary containing ASCII quality filter scores to help with tie breaks
                samMapLen=None): # expected sequence length will help when primary reads are still not perfectly aligned with reference
@@ -352,14 +351,13 @@ def parallel_DBR_filter(assembled_dir, # the SAM files for the data mapped to ps
     for i in os.listdir(assembled_dir):
         if 'unmatched' not in i: # skip the SAM files with sequences that didn't match
             file_list.append(i)
-    dbrProcess = [mp.Process(target=DBR_dict, args=(assembled_dir, # the SAM files for the data mapped to pseudoreference
-               in_file, # the input file name
-               out_dir, # the output file, full path, ending with .fasta
-               n_expected, # the number of differences to be tolerated
-               barcode_dir, # the barcodes for individuals in the library referenced in dict_in
-               dict_dir, # a single dictionary of DBRs (for one library only)
-               sample_regex, # regular expression to find the sample ID
-               barcode_file=None, # if just a single library is being used, can directly pass the barcode file
+    dbrProcess = [mp.Process(target=DBR_dict, args=(assembled_dir=assembled_dir, # the SAM files for the data mapped to pseudoreference
+               in_file=in_file, # the input file name
+               out_dir=out_dir, # the output file, full path, ending with .fasta
+               n_expected=n_expected, # the number of differences to be tolerated
+               barcode_dir=barcode_dir, # the barcodes for individuals in the library referenced in dict_in
+               dict_dir=dict_dir, # a single dictionary of DBRs (for one library only)
+               sample_regex=sample_regex, # regular expression to find the sample ID
                test_dict=True, # optionally print testing info to stdout for checking the dictionary construction
                phred_dict=phred_dict, # dictionary containing ASCII quality filter scores to help with tie breaks
                samMapLen=None)) for in_file in file_list]
@@ -376,7 +374,6 @@ def DBR_Filter(assembled_dir, # the SAM files for the data mapped to pseudorefer
                barcode_dir, # the barcodes for individuals in the library referenced in dict_in
                dict_dir, # a single dictionary of DBRs (for one library only)
                sample_regex, # regular expression to find the sample ID
-               barcode_file=None, # if just a single library is being used, can directly pass the barcode file
                test_dict=True, # optionally print testing info to stdout for checking the dictionary construction
                phred_dict=phred_dict, # dictionary containing ASCII quality filter scores to help with tie breaks
                samMapLen=None): # expected sequence length will help when primary reads are still not perfectly aligned with reference
