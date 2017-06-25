@@ -343,7 +343,7 @@ def parallel_DBR_Filter(assembled_dir, # the SAM files for the data mapped to ps
     for i in os.listdir(assembled_dir):
         if 'unmatched' not in i: # skip the SAM files with sequences that didn't match
             file_list.append(i)
-    dbrProcess = [mp.Process(target=DBR_dict, args=(assembled_dir, # the SAM files for the data mapped to pseudoreference
+    dbrProcess = [mp.Process(target=DBR_Filter, args=(assembled_dir, # the SAM files for the data mapped to pseudoreference
                in_file, # the input file name
                out_dir, # the output file, full path, ending with .fasta
                n_expected, # the number of differences to be tolerated
