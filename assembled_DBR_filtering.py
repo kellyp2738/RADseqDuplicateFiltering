@@ -375,7 +375,7 @@ def DBR_Filter(assembled_dir, # the SAM files for the data mapped to pseudorefer
             
             # use the library ID to find the right DBR dictionary
             #dict_in = find_DBRdictionary(libraryID, dict_dir)
-            dict_in = find_DBRdictionary(libraryID, dict_dir)
+            dict_in = find_DBRdictionary(sampleID, dict_dir)
             print 'dictID', dict_in
             
             if sampleID and dict_in: # and libraryID and bcf: # if all of these != None
