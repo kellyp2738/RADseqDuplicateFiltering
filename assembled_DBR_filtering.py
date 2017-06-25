@@ -375,7 +375,7 @@ def DBR_Filter(assembled_dir, # the SAM files for the data mapped to pseudorefer
     logfile = out_dir + '/DBR_filtered_sequences_logfile.csv'
     
     # extract the sample ID
-    sampleID = find_SampleID(i, sample_regex) # find the sample ID, potentially with some extra characters to distinguish from library ID
+    sampleID = find_SampleID(in_file, sample_regex) # find the sample ID, potentially with some extra characters to distinguish from library ID
     print 'sampleID', sampleID
     
     # use the sample ID to match a DBR dictionary
