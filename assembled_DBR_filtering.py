@@ -281,11 +281,8 @@ def qual_median(QUAL, phred_dict):
     return median_qual
     
 def find_SampleID(filename, r):
-    #sampleID_match = re.match(".*(\d{3}[a-z]?).*", filename)
-    # this revision is VERY specific to my technical replicates
-    # TODO: find a way to pass the regex capture group as an argument so that this (and related functions) are more flexible
-    #sampleID_match = re.match(".*(\d{1,3}T?).*", filename)
-    sampleID_match = re.match(r, filename)
+    sampleID_regex = re.compile(r)
+    sampleID_match = sampleID_regex.match(filename)
     if sampleID_match:
         sampleID = sampleID_match.groups()[0]
         return sampleID
