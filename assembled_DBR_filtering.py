@@ -363,6 +363,7 @@ def DBR_Filter(assembled_dir, # the SAM files for the data mapped to pseudorefer
             
             # extract the sample ID with a regex
             sampleID = find_SampleID(i, sample_regex) # find the sample ID, potentially with some extra characters to distinguish from library ID
+            print sampleID
             
             # extract the library ID with a regex
             #libraryID = find_LibraryID(i)
