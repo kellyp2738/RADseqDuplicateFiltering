@@ -330,7 +330,7 @@ def find_DBRdictionary(match_string, directory):
     else:
         return None
         
-def parallel_DBR_filter(assembled_dir, # the SAM files for the data mapped to pseudoreference
+def parallel_DBR_Filter(assembled_dir, # the SAM files for the data mapped to pseudoreference
                out_dir, # the output file, full path, ending with .fasta
                n_expected, # the number of differences to be tolerated
                barcode_dir, # the barcodes for individuals in the library referenced in dict_in
@@ -339,14 +339,6 @@ def parallel_DBR_filter(assembled_dir, # the SAM files for the data mapped to ps
                test_dict=True, # optionally print testing info to stdout for checking the dictionary construction
                phred_dict=phred_dict, # dictionary containing ASCII quality filter scores to help with tie breaks
                samMapLen=None): # expected sequence length will help when primary reads are still not perfectly aligned with reference
-    #if not checkDir(in_dir):
-    #    raise IOError("Input is not a directory: %s" % in_dir)
-    if seqType == 'read2':
-        warnings.warn('Expect directory containing only Read 2 files; any other files present in %s will be incorporated into DBR dictionary.' % in_dir)
-    elif seqType == 'pear':
-        warnings.warn('Expect directory containing only merged Read 1 and Read 2 files; any other files present in %s will be incorporated into DBR directory' % in_dir)
-    else:
-        raise IOError("Input sequence type specified as %s. Options are 'pear' or 'read2'." % seqType)
     file_list = []
     for i in os.listdir(assembled_dir):
         if 'unmatched' not in i: # skip the SAM files with sequences that didn't match
