@@ -676,7 +676,7 @@ def denovo_Ustacks(in_dir, denovo_path, stacks_executables, out_dir, m, n, b, D,
             ustacks_call = ''.join(ustacks_args)
             subprocess.call(ustacks_call, shell=True)
 
-def denovo_Cstacks(in_dir, denovo_path, stacks_executables, out_dir, m, n, b, D):    
+def denovo_Cstacks(in_dir, denovo_path, stacks_executables, out_dir, m, n, num_threads, b, D):    
     
     cstacksMessageTemplate = Template('*****Preparing sample $name for CSTACKS.*****')
     segfaultWarningTemplate = Template('### WARNING ### empty .alleles.tsv file for %sample')
@@ -720,7 +720,7 @@ def denovo_Cstacks(in_dir, denovo_path, stacks_executables, out_dir, m, n, b, D)
     # Run cstacks
     # example usage: cstacks -b 1 -o ./stacks -s ./stacks/f0_male -s ./stacks/f0_female -p 15
     cstacks_path = stacks_executables + '/cstacks'
-    cstacks_args = [cstacks_path, ' -b 1 -n ', str(n), ' -o ', out_dir, ' ', formatted_list]
+    cstacks_args = [cstacks_path, ' -b 1 -n ', str(n), ' -p ' str(num_threads),' -o ', out_dir, ' ', formatted_list]
     cstacks_call = ''.join(cstacks_args)
     print cstacks_call
     subprocess.call(cstacks_call, shell=True)
