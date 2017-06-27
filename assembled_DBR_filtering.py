@@ -49,6 +49,30 @@ import gzip
 #               out_seqs = '/path/to/filtered_library1.fastq',
 #               n_expected = 2)
 
+class Work():
+    def __init__(self, commandline, shell, cwd = os.getcwd(), libraryPath = None, analysisFile = None):
+        self.commandline = commandline
+        # probably do not need this libraryPath code... for Joe's dynamically loaded libraries with duplicate names
+        if libraryPath is not None:
+            self.env = os.environ.copy()
+            self.env["LD_LIBRARY_PATH"] = "%s:%s" % (libraryPath, self.env["LD_LIBRARY_PATH"])
+        else:
+            self.env = os.environ.copy()
+            self.shell = shell
+            self.cwd = cwd
+
+def worker():
+    'run subprocesses in an orderly fashion'
+    while True:
+        workItem = processQueue.get()
+        if workItem.commandline != None:
+            p = Popen(workItem.commandline,
+                      env = workItem.env,
+                      shell = workItem.shell,
+                      cwd = workItem.cwd)
+            p.wait()
+            processQueue.task_done()
+
 def checkFile(filename):
     '''
     return true if this is a file and is readable on the current filesystem
@@ -336,13 +360,21 @@ def parallel_DBR_Filter(assembled_dir, # the SAM files for the data mapped to ps
                barcode_dir, # the barcodes for individuals in the library referenced in dict_in
                dict_dir, # a single dictionary of DBRs (for one library only)
                sample_regex, # regular expression to find the sample ID
+               sam_list = None, # optional text file containing names of files for which to make DBR dicts
                test_dict=True, # optionally print testing info to stdout for checking the dictionary construction
                phred_dict=phred_dict, # dictionary containing ASCII quality filter scores to help with tie breaks
                samMapLen=None): # expected sequence length will help when primary reads are still not perfectly aligned with reference
     file_list = []
-    for i in os.listdir(assembled_dir):
-        if 'unmatched' not in i: # skip the SAM files with sequences that didn't match
-            file_list.append(i)
+    
+    if sam_list:
+        with open(file_list) as fl:
+            for line in fl:
+                file_list.append(line)
+    else:
+        for i in os.listdir(assembled_dir):
+            if 'unmatched' not in i: # skip the SAM files with sequences that didn't match
+                file_list.append(i)
+                
     dbrProcess = [mp.Process(target=DBR_Filter, args=(assembled_dir, # the SAM files for the data mapped to pseudoreference
                in_file, # the input file name
                out_dir, # the output file, full path, ending with .fasta
