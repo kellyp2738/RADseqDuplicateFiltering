@@ -459,7 +459,7 @@ def FASTQ_quality_filter(in_file, out_file, q, p, qualityFilter):
 ## TRIM R2 END OF MERGED SEQUENCE BEFORE DEMULTIPLEXING TO ENFORCE UNIFORM READ LENGTH?
 
 # parallel_Trim uses worker pools for parallelization
-def parallel_Trim(in_dir, out_dir, trimPath, first_base, last_base=None, suffix = '_trimmed.fq', execute=True):
+def parallel_Trim(in_dir, out_dir, trimPath, threads, first_base, last_base=None, suffix = '_trimmed.fq', execute=True):
     
     # new directory for trimmed files
     if not os.path.exists(out_dir):
