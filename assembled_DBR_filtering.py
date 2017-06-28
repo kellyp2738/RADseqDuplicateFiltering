@@ -74,12 +74,14 @@ def parallel_DBR_dict(in_dir, seqType, dbr_start, dbr_stop, threads, test_dict =
     
     pool = mp.Pool(processes=threads)
     for in_file in file_list:
-        pool.apply_async(DBR_dict, args=(in_dir,
-                                         in_file, 
-                                         dbr_start,
-                                         dbr_stop,
-                                         test_dict,
-                                         save)) 
+        if in_file.endswith('.fastq'):
+            if 'undetermined' not in in_file:
+                pool.apply_async(DBR_dict, args=(in_dir,
+                                                 in_file, 
+                                                 dbr_start,
+                                                 dbr_stop,
+                                                 test_dict,
+                                                 save)) 
     
     pool.close()
     pool.join()
