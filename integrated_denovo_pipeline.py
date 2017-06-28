@@ -247,6 +247,8 @@ def qc_loop(in_dir, out_dir, cut_min, cut_max, read=None):
     
     processQueue.join()
 
+# parallel_FASTQ_quality_filter uses process queues for parallelization
+# should be updated to use worker pools
 def parallel_concatenate(in_dir, regexR1, regexR2, out_dir):
     # this function won't work if in_dir has other files (that contain the regexes)
     files = os.listdir(in_dir)
@@ -286,6 +288,8 @@ def concatenate(read1, read2, out_name):
                         fq_line += 1
 
 ## not properly working
+# parallel_FASTQ_quality_filter uses process queues for parallelization
+# should be updated to use worker pools
 def parallel_merge_lanes(in_dir, regexLibrary, out_dir, out_suffix = '_qual_filtered_fully_concatenated.fq.gz'):
 	files = os.listdir(in_dir)
 	lib_set = set([])
@@ -323,6 +327,8 @@ def merge_lanes(laneList, out_dir, out_name):
 	print commandLine
 	subprocess.call(commandLine, shell=True)
 
+# parallel_FASTQ_quality_filter uses process queues for parallelization
+# should be updated to use worker pools
 def parallel_PEAR_assemble(regexR1, regexR2, regexLibrary, in_dir, out_dir, pearPath, out_name = 'pear_merged_', extra_params=None):
     files = os.listdir(in_dir)
     
@@ -385,6 +391,8 @@ def PEAR_assemble(R1, R2, out_dir, out_file, pearPath, extra_params=None):
     #pearProcess = Popen(commandLine, shell=True)
     #pearProcess.wait()
 
+# parallel_FASTQ_quality_filter uses process queues for parallelization
+# should be updated to use worker pools
 def parallel_FASTQ_quality_filter(in_dir, out_dir, out_name, q, p, qualityFilter, read='*'):
     
     # find all the files in the input directory
@@ -450,6 +458,7 @@ def FASTQ_quality_filter(in_file, out_file, q, p, qualityFilter):
 
 ## TRIM R2 END OF MERGED SEQUENCE BEFORE DEMULTIPLEXING TO ENFORCE UNIFORM READ LENGTH?
 
+# parallel_Trim uses worker pools for parallelization
 def parallel_Trim(in_dir, out_dir, trimPath, first_base, last_base=None, suffix = '_trimmed.fq', execute=True):
     
     # new directory for trimmed files
@@ -458,6 +467,7 @@ def parallel_Trim(in_dir, out_dir, trimPath, first_base, last_base=None, suffix 
     
     trimProcess = []
     uniformLengthTemplate = Template('%s -f $f -l $l -i $input -o $output' % trimPath)    
+    pool = mp.Pool(processes=threads)
     for i in os.listdir(in_dir):
         # save file as out_file
         out_name = i + suffix
@@ -466,19 +476,15 @@ def parallel_Trim(in_dir, out_dir, trimPath, first_base, last_base=None, suffix 
         in_file=os.path.join(in_dir, i)
         out_file=os.path.join(out_dir, out_name)
         
-        #trim_call = uniformLengthTemplate.substitute(f = str(first_base), l = str(last_base), input = in_file, output = out_file)
-        #print trim_call
-        
-        trimProcess.append(mp.Process(target=Trim, args=(in_file, out_file, first_base, trimPath, last_base, execute)))
-        #commandline = Trim(in_file, out_file, trimPath, first_base, last_base, execute)
-        #processQueue.put(Work(commandline = commandline, shell = True), True, 360)
-    
-    #processQueue.join()
-    
-    for tP in trimProcess:
-        tP.start()
-    for tP in trimProcess:
-        tP.join()
+        pool.apply_async(Trim, args=(in_file, 
+        						     out_file, 
+        						     first_base, 
+        						     trimPath, 
+        						     last_base, 
+        						     execute))
+        						      
+    pool.close()
+    pool.join()
 
 def Trim(in_file, out_file, first_base, trimPath, last_base=None, execute=True):    
     
@@ -758,6 +764,7 @@ def GeneratePseudoref(in_dir, out_file, BWA_path):
     subprocess.call(index_call, shell = True)
     return
 
+# parallel_refmap_BWA uses Joe's worker class for parallelization
 def parallel_refmap_BWA(in_dir, out_dir, BWA_path, pseudoref_full_path):
 
     print 'Mapping sequence data to pseudoreference genome using BWA.\n'
@@ -781,12 +788,7 @@ def parallel_refmap_BWA(in_dir, out_dir, BWA_path, pseudoref_full_path):
                 processQueue.put(Work(commandline = commandline, shell = True), True, 360)
     
     processQueue.join()
-            
-    #for rP in refmapProcess:
-    #    rP.start()
-    #for rP in refmapProcess:
-    #    rP.join()  
-
+              
 def refmap_BWA(in_file, fname, out_file, BWA_path, pseudoref_full_path, execute=True):    
     
     #### NEED TO CHECK IF LIBRARIES SPLIT ACROSS LANES (AND IN DIFFERENT FASTQ FILES) HAVE SAMPLES OVERWRITTEN HERE
