@@ -71,7 +71,9 @@ def parallel_DBR_dict(in_dir, seqType, dbr_start, dbr_stop, test_dict = False, s
     else:
         raise IOError("Input sequence type specified as %s. Options are 'pear' or 'read2'." % seqType)
     file_list = os.listdir(in_dir)
-    dbrProcess = [mp.Process(target=DBR_dict, args=(in_dir,
+    
+    pool = mp.Pool(processes=4)
+    dbrProcess = [pool.apply_async(DBR_dict, args=(in_dir,
                                                     in_file, 
                                                     dbr_start,
                                                     dbr_stop,
