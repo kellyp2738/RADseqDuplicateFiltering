@@ -49,30 +49,6 @@ import gzip
 #               out_seqs = '/path/to/filtered_library1.fastq',
 #               n_expected = 2)
 
-class Work():
-    def __init__(self, commandline, shell, cwd = os.getcwd(), libraryPath = None, analysisFile = None):
-        self.commandline = commandline
-        # probably do not need this libraryPath code... for Joe's dynamically loaded libraries with duplicate names
-        if libraryPath is not None:
-            self.env = os.environ.copy()
-            self.env["LD_LIBRARY_PATH"] = "%s:%s" % (libraryPath, self.env["LD_LIBRARY_PATH"])
-        else:
-            self.env = os.environ.copy()
-            self.shell = shell
-            self.cwd = cwd
-
-def worker():
-    'run subprocesses in an orderly fashion'
-    while True:
-        workItem = processQueue.get()
-        if workItem.commandline != None:
-            p = Popen(workItem.commandline,
-                      env = workItem.env,
-                      shell = workItem.shell,
-                      cwd = workItem.cwd)
-            p.wait()
-            processQueue.task_done()
-
 def checkFile(filename):
     '''
     return true if this is a file and is readable on the current filesystem
