@@ -73,17 +73,21 @@ def parallel_DBR_dict(in_dir, seqType, dbr_start, dbr_stop, test_dict = False, s
     file_list = os.listdir(in_dir)
     
     pool = mp.Pool(processes=4)
-    dbrProcess = [pool.apply_async(DBR_dict, args=(in_dir,
-                                                    in_file, 
-                                                    dbr_start,
-                                                    dbr_stop,
-                                                    test_dict,
-                                                    save)) for in_file in file_list]
+    for in_file in file_list:
+        pool.apply_async(DBR_dict, args=(in_dir,
+                                         in_file, 
+                                         dbr_start,
+                                         dbr_stop,
+                                         test_dict,
+                                         save)) 
+    
+    pool.close()
+    pool.join()
      
-    for dP in dbrProcess:
-        dP.start()
-    for dP in dbrProcess:
-        dP.join()
+    #for dP in dbrProcess:
+    #    dP.start()
+    #for dP in dbrProcess:
+    #    dP.join()
 
 def DBR_dict(in_dir, in_file, dbr_start, dbr_stop, test_dict = False, save = None):
     # DBR is in read 2
