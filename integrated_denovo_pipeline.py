@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 #########################################################################################
 #                                                                                       #
 #    integrated_denovo_pipeline.py: a denovo pipeline for processing DBR RADseq Data    #
