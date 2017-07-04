@@ -359,7 +359,7 @@ def parallel_DBR_Filter(assembled_dir, # the SAM files for the data mapped to ps
             if 'unmatched' not in i: # skip the SAM files with sequences that didn't match
                 file_list.append(i)
                 
-    pool = mp.Pool(processes=threads)
+    pool = mp.Pool(processes=num_threads)
     
     for in_file in file_list:
         mp.Process(target=DBR_Filter, args=(assembled_dir, # the SAM files for the data mapped to pseudoreference
