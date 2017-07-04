@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 #######################################################################################################################################
 #                                                                                                                                     #
 #    assembled_DBR_filtering.py: comparison of degenerate base regions (DBRs) in assembled RADseq data for PCR duplicate detection    #
@@ -344,13 +342,14 @@ def parallel_DBR_Filter(assembled_dir, # the SAM files for the data mapped to ps
                barcode_dir, # the barcodes for individuals in the library referenced in dict_in
                dict_dir, # a single dictionary of DBRs (for one library only)
                sample_regex, # regular expression to find the sample ID
-               threads, # number of threads
+               num_threads, # number of threads
                sam_list = None, # optional text file containing names of files for which to make DBR dicts
                test_dict=True, # optionally print testing info to stdout for checking the dictionary construction
                phred_dict=phred_dict, # dictionary containing ASCII quality filter scores to help with tie breaks
                samMapLen=None): # expected sequence length will help when primary reads are still not perfectly aligned with reference
     file_list = []
     
+    ## untested ##
     if sam_list:
         with open(file_list) as fl:
             for line in fl:
@@ -362,9 +361,8 @@ def parallel_DBR_Filter(assembled_dir, # the SAM files for the data mapped to ps
                 
     pool = mp.Pool(processes=threads)
     
-
     for in_file in file_list:
-    	mp.Process(target=DBR_Filter, args=(assembled_dir, # the SAM files for the data mapped to pseudoreference
+        mp.Process(target=DBR_Filter, args=(assembled_dir, # the SAM files for the data mapped to pseudoreference
                in_file, # the input file name
                out_dir, # the output file, full path, ending with .fasta
                n_expected, # the number of differences to be tolerated
