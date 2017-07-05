@@ -358,11 +358,11 @@ def parallel_DBR_Filter(assembled_dir, # the SAM files for the data mapped to ps
         for i in os.listdir(assembled_dir):
             if 'unmatched' not in i: # skip the SAM files with sequences that didn't match
                 file_list.append(i)
-    print file_list
+    #print file_list
     pool = mp.Pool(processes=num_threads)
     
     for in_file in file_list:
-        mp.Process(target=DBR_Filter, args=(assembled_dir, # the SAM files for the data mapped to pseudoreference
+        pool.apply_async(DBR_Filter, args=(assembled_dir, # the SAM files for the data mapped to pseudoreference
                in_file, # the input file name
                out_dir, # the output file, full path, ending with .fasta
                n_expected, # the number of differences to be tolerated
@@ -395,16 +395,16 @@ def DBR_Filter(assembled_dir, # the SAM files for the data mapped to pseudorefer
     #pdb.set_trace()
     #logfile = os.path.splitext(out_seqs)[0] + '_logfile.csv'
     logfile = out_dir + '/DBR_filtered_sequences_logfile.csv'
-    print in_file
-    print logfile
+    #print in_file
+    #print logfile
 
     # extract the sample ID
     sampleID = find_SampleID(in_file, sample_regex) # find the sample ID, potentially with some extra characters to distinguish from library ID
-    print 'sampleID', sampleID
+    #print 'sampleID', sampleID
     
     # use the sample ID to match a DBR dictionary
     dict_in = find_DBRdictionary(sampleID, dict_dir)
-    print 'dictID', dict_in
+    #print 'dictID', dict_in
     
     if sampleID and dict_in:
     
