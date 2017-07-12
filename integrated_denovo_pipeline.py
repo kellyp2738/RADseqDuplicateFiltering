@@ -763,7 +763,7 @@ def GeneratePseudoref(in_dir, out_file, BWA_path):
     return
 
 # parallel_refmap_BWA uses Joe's worker class for parallelization
-def parallel_refmap_BWA(in_dir, out_dir, BWA_path, pseudoref_full_path):
+def parallel_refmap_BWA(in_dir, out_dir, BWA_path, pseudoref_full_path, extra_output_identifier=None):
 
     print 'Mapping sequence data to pseudoreference genome using BWA.\n'
     if not os.path.exists(out_dir):
@@ -771,6 +771,10 @@ def parallel_refmap_BWA(in_dir, out_dir, BWA_path, pseudoref_full_path):
     
     #refmapProcess = []
     
+    if extra_output_identifier:
+        file_ext = extra_output_identifier + '.sam'
+    else:
+        file_ext = '.sam'
     # the regex below also finds unmatched samples    
     rex = re.compile(r'\d+')
     
@@ -779,7 +783,7 @@ def parallel_refmap_BWA(in_dir, out_dir, BWA_path, pseudoref_full_path):
             if rex.search(i):
                 fname, fext = os.path.splitext(i)
                 in_file = in_dir + i
-                out_file = out_dir + fname + '.sam'
+                out_file = out_dir + fname + file_ext
                 commandline = refmap_BWA(in_file, fname, out_file, BWA_path, pseudoref_full_path, execute=False)
                 #refmapProcess.append(mp.Process(target=refmap_BWA, args=(in_file, fname, out_file, BWA_path, pseudoref_full_path)))
         
