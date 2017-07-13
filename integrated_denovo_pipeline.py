@@ -815,7 +815,7 @@ def refmap_BWA(in_file, fname, out_file, BWA_path, pseudoref_full_path, execute=
     else:
         return bwa_mem_call
 
-def callGeno(sam_in, pseudoref, BCFout, VCFout, samtoolsPath, bcftoolsPath, threads):
+def callGeno(sam_in, pseudoref, BCFout, VCFout, samtoolsPath, bcftoolsPath):
     #print sam_in, pseudoref, BCFout, VCFout
     # set up the individual files for transfer from sam to bam and bam indexing
     
