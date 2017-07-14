@@ -815,7 +815,7 @@ def refmap_BWA(in_file, fname, out_file, BWA_path, pseudoref_full_path, execute=
     else:
         return bwa_mem_call
 
-def callGeno(sam_in, pseudoref, BCFout, VCFout, samtoolsPath, bcftoolsPath):
+def samtools_view_sort_index(sam_in, pseudoref, BCFout, VCFout, samtoolsPath, bcftoolsPath):
     #print sam_in, pseudoref, BCFout, VCFout
     # set up the individual files for transfer from sam to bam and bam indexing
     
@@ -826,8 +826,6 @@ def callGeno(sam_in, pseudoref, BCFout, VCFout, samtoolsPath, bcftoolsPath):
     samtoolsView = Template('%s view -F 4 -b -S -@ $threads -o $output $input' % samtoolsPath)
     samtoolsSort = Template('%s sort -@ $threads -o $output $input' % samtoolsPath)
     samtoolsIndex = Template('%s index $input' % samtoolsPath)
-    samtoolsMpileup = Template('%s mpileup -t DP -C50 -u -I -f $reference -o $bcf_out $input' % samtoolsPath)
-    bcftoolsView = Template('%s call -v -m $input > $output' % bcftoolsPath)
     
     for sam in os.listdir(sam_in):
         # TODO: add if 'sam' in sam (check that we don't already have bam files)
@@ -849,6 +847,11 @@ def callGeno(sam_in, pseudoref, BCFout, VCFout, samtoolsPath, bcftoolsPath):
         index_cmd = samtoolsIndex.substitute(input = sorted_sam)
         print index_cmd
         subprocess.call(index_cmd, shell=True)
+
+def samtools_mpileup(sam_in, pseudoref, BCFout, VCFout, samtoolsPath, bcftoolsPath):   
+    
+    samtoolsMpileup = Template('%s mpileup -t DP -C50 -u -I -f $reference -o $bcf_out $input' % samtoolsPath)
+    bcftoolsView = Template('%s call -v -m $input > $output' % bcftoolsPath)
     
     # take the sorted, indexed bam files and perform the genotype calling with mpileup
     print 'Calling genotypes with samtools mpileup'
