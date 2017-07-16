@@ -850,7 +850,7 @@ def samtools_view_sort_index(sam_in, pseudoref, BCFout, VCFout, samtoolsPath, bc
 
 def samtools_mpileup(sam_in, pseudoref, BCFout, VCFout, samtoolsPath, bcftoolsPath):   
     
-    samtoolsMpileup = Template('%s mpileup -t DP -C50 -u -I -f $reference -o $bcf_out $input' % samtoolsPath)
+    samtoolsMpileup = Template('%s mpileup -t DP -C50 -u -I -f $reference -o $bcf_out -g -v $input' % samtoolsPath)
     bcftoolsView = Template('%s call -v -m $input > $output' % bcftoolsPath)
     
     # take the sorted, indexed bam files and perform the genotype calling with mpileup
